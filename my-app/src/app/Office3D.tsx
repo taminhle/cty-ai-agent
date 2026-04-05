@@ -5,26 +5,22 @@ import { OrbitControls, Html, Box, Plane, ContactShadows } from "@react-three/dr
 import * as THREE from "three";
 
 // =========================================================
-// KIẾN TRÚC MẢNG XANH VÀ CỘT TRỤ
+// KIẾN TRÚC MẢNG XANH VÀ CỘT TRỤ (SÁNG SỦA HIỆN ĐẠI)
 // =========================================================
 function IndoorPlant({ position }: any) {
   return (
     <group position={position}>
       <mesh position={[0, 0.4, 0]} castShadow>
-        <cylinderGeometry args={[0.3, 0.2, 0.8, 16]} />
-        <meshStandardMaterial color="#f8fafc" roughness={0.9} />
+        <cylinderGeometry args={[0.4, 0.3, 0.8, 16]} />
+        <meshStandardMaterial color="#ffffff" roughness={0.5} /> {/* Chậu trắng sứ */}
       </mesh>
       <mesh position={[0, 1.2, 0]} castShadow>
-        <cylinderGeometry args={[0.05, 0.05, 1, 8]} />
+        <cylinderGeometry args={[0.08, 0.08, 1, 8]} />
         <meshStandardMaterial color="#78350f" />
       </mesh>
-      <mesh position={[0, 1.8, 0]} castShadow>
-        <sphereGeometry args={[0.8, 16, 16]} />
+      <mesh position={[0, 2, 0]} castShadow>
+        <sphereGeometry args={[1, 16, 16]} />
         <meshStandardMaterial color="#22c55e" roughness={0.8} />
-      </mesh>
-      <mesh position={[-0.3, 1.5, 0.3]} castShadow>
-        <sphereGeometry args={[0.5, 16, 16]} />
-        <meshStandardMaterial color="#16a34a" roughness={0.8} />
       </mesh>
     </group>
   );
@@ -33,22 +29,13 @@ function IndoorPlant({ position }: any) {
 function ArchitectPillar({ position }: any) {
   return (
     <group position={position}>
-      <mesh position={[0, 3, 0]} castShadow receiveShadow>
-        <boxGeometry args={[1, 6, 1]} />
-        <meshStandardMaterial color="#020617" roughness={0.2} metalness={0.8} />
+      <mesh position={[0, 5, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[1.2, 1.2, 10, 32]} />
+        <meshStandardMaterial color="#f1f5f9" roughness={0.9} /> {/* Trụ bê tông tròn trắng sữa */}
       </mesh>
       <mesh position={[0, 0.2, 0]} castShadow>
-        <boxGeometry args={[1.2, 0.4, 1.2]} />
-        <meshStandardMaterial color="#334155" metalness={0.9} />
-      </mesh>
-      {/* LED Viền Cột */}
-      <mesh position={[0, 3, 0.51]}>
-        <boxGeometry args={[0.1, 5.8, 0.05]} />
-        <meshBasicMaterial color="#0ea5e9" />
-      </mesh>
-      <mesh position={[0, 3, -0.51]}>
-        <boxGeometry args={[0.1, 5.8, 0.05]} />
-        <meshBasicMaterial color="#0ea5e9" />
+        <cylinderGeometry args={[1.4, 1.4, 0.4, 32]} />
+        <meshStandardMaterial color="#cbd5e1" />
       </mesh>
     </group>
   );
@@ -57,14 +44,18 @@ function ArchitectPillar({ position }: any) {
 function PlanterBox({ position, rotation }: any) {
   return (
     <group position={position} rotation={rotation}>
-      <mesh position={[0, 0.3, 0]} castShadow>
-        <boxGeometry args={[4, 0.6, 0.8]} />
-        <meshStandardMaterial color="#334155" />
+      <mesh position={[0, 0.4, 0]} castShadow>
+        <boxGeometry args={[6, 0.8, 1]} />
+        <meshStandardMaterial color="#f8fafc" roughness={0.4} /> {/* Bồn cây trắng viền gỗ */}
       </mesh>
-      {[-1.5, -0.5, 0.5, 1.5].map((x, i) => (
-        <mesh key={i} position={[x, 0.7, 0]} castShadow>
-          <sphereGeometry args={[0.4, 16, 16]} />
-          <meshStandardMaterial color="#15803d" roughness={0.9} />
+      <mesh position={[0, 0.8, 0]} castShadow>
+        <boxGeometry args={[5.8, 0.1, 0.8]} />
+        <meshStandardMaterial color="#3f2e22" roughness={0.9} /> {/* Đất */}
+      </mesh>
+      {[-2, -1, 0, 1, 2].map((x, i) => (
+        <mesh key={i} position={[x, 1.2, 0]} castShadow>
+          <sphereGeometry args={[0.6, 16, 16]} />
+          <meshStandardMaterial color="#16a34a" roughness={0.9} />
         </mesh>
       ))}
     </group>
@@ -73,23 +64,17 @@ function PlanterBox({ position, rotation }: any) {
 
 function ReceptionWall() {
   return (
-    <group position={[0, 0, -18]}>
-      {/* Bức tường đen nhám */}
-      <mesh position={[0, 4, 0]} receiveShadow>
-        <boxGeometry args={[34, 8, 1]} />
-        <meshStandardMaterial color="#000000" roughness={0.8} />
+    <group position={[0, 0, -32]}>
+      <mesh position={[0, 5, 0]} receiveShadow>
+        <boxGeometry args={[40, 10, 1]} />
+        <meshStandardMaterial color="#ffffff" roughness={0.2} metalness={0.1} />
       </mesh>
-      {/* Khung LED Neon xung quanh */}
-      <mesh position={[0, 4, 0.55]}>
-        <boxGeometry args={[33, 7.5, 0.05]} />
-        <meshBasicMaterial color="#38bdf8" wireframe />
-      </mesh>
-      <Html position={[0, 6, 0.6]} center zIndexRange={[100, 0]} transform>
+      <Html position={[0, 6, 0.51]} center zIndexRange={[100, 0]} transform>
          <div className="bg-transparent text-center scale-[2]">
-            <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 tracking-widest drop-shadow-[0_0_20px_rgba(34,211,238,0.8)]">
-              HOANG KIM CORPORATION
+            <h1 className="text-5xl font-black text-gray-800 tracking-[0.2em] drop-shadow-md">
+              HOANG KIM <span className="text-blue-600">CORP</span>
             </h1>
-            <p className="text-cyan-100 text-sm tracking-[0.5em] mt-2 opacity-80 uppercase font-mono drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
+            <p className="text-gray-500 text-sm tracking-[0.5em] mt-3 uppercase font-semibold">
               The AI Tech Giant
             </p>
          </div>
@@ -105,18 +90,19 @@ function ModernDesk({ position, rotation, partitionColor }: any) {
   return (
     <group position={position} rotation={rotation}>
       <Box args={[1.6, 0.05, 0.8]} position={[0, 0.75, 0]} castShadow receiveShadow>
-        <meshStandardMaterial color="#0f172a" roughness={0.2} metalness={0.8} />
+        <meshStandardMaterial color="#f8fafc" roughness={0.1} /> {/* Mặt bàn trắng nhám */}
       </Box>
-      <Box args={[0.05, 0.75, 0.6]} position={[-0.7, 0.375, 0]} castShadow><meshStandardMaterial color="#1e293b" /></Box>
-      <Box args={[0.05, 0.75, 0.6]} position={[0.7, 0.375, 0]} castShadow><meshStandardMaterial color="#1e293b" /></Box>
-      <Box args={[1.5, 0.4, 0.02]} position={[0, 0.95, -0.38]}>
-        <meshPhysicalMaterial color={partitionColor} transmission={0.9} transparent opacity={0.4} emissive={partitionColor} emissiveIntensity={0.2} />
+      <Box args={[0.05, 0.75, 0.6]} position={[-0.7, 0.375, 0]} castShadow><meshStandardMaterial color="#94a3b8" /></Box>
+      <Box args={[0.05, 0.75, 0.6]} position={[0.7, 0.375, 0]} castShadow><meshStandardMaterial color="#94a3b8" /></Box>
+      {/* Vách ngăn thấp */}
+      <Box args={[1.5, 0.4, 0.05]} position={[0, 0.95, -0.38]}>
+        <meshStandardMaterial color={partitionColor} roughness={0.4} />
       </Box>
-      {/* Màn hình máy tính phát sáng */}
+      {/* Màn hình */}
       <Box args={[0.6, 0.35, 0.02]} position={[0, 0.95, -0.1]} rotation={[-0.1, 0, 0]} castShadow>
-        <meshStandardMaterial color="#020617" emissive="#0284c7" emissiveIntensity={0.5} />
+        <meshStandardMaterial color="#1e293b" />
       </Box>
-      <Box args={[0.1, 0.1, 0.1]} position={[0, 0.8, -0.15]}><meshStandardMaterial color="#334155" /></Box>
+      <Box args={[0.1, 0.1, 0.1]} position={[0, 0.8, -0.15]}><meshStandardMaterial color="#cbd5e1" /></Box>
     </group>
   );
 }
@@ -124,11 +110,11 @@ function ModernDesk({ position, rotation, partitionColor }: any) {
 function OfficeChair({ position, rotation }: any) {
   return (
     <group position={position} rotation={rotation}>
-      <Box args={[0.5, 0.1, 0.5]} position={[0, 0.45, 0]} castShadow><meshStandardMaterial color="#1e293b" /></Box>
-      <Box args={[0.45, 0.5, 0.05]} position={[0, 0.75, 0.22]} castShadow><meshStandardMaterial color="#334155" /></Box>
+      <Box args={[0.5, 0.1, 0.5]} position={[0, 0.45, 0]} castShadow><meshStandardMaterial color="#334155" /></Box>
+      <Box args={[0.45, 0.6, 0.05]} position={[0, 0.75, 0.22]} castShadow><meshStandardMaterial color="#1e293b" /></Box>
       <Box args={[0.05, 0.4, 0.05]} position={[0, 0.2, 0]} castShadow><meshStandardMaterial color="#94a3b8" /></Box>
-      <Box args={[0.4, 0.05, 0.05]} position={[0, 0.025, 0]}><meshStandardMaterial color="#1e293b" /></Box>
-      <Box args={[0.05, 0.05, 0.4]} position={[0, 0.025, 0]}><meshStandardMaterial color="#1e293b" /></Box>
+      <Box args={[0.4, 0.05, 0.05]} position={[0, 0.025, 0]}><meshStandardMaterial color="#475569" /></Box>
+      <Box args={[0.05, 0.05, 0.4]} position={[0, 0.025, 0]}><meshStandardMaterial color="#475569" /></Box>
     </group>
   );
 }
@@ -150,32 +136,33 @@ function AgentCharacter({ position, name, role, isWorking, avatar, color }: any)
 
   return (
     <group position={position}>
+      {/* Hologram Body */}
       <mesh ref={meshRef} position={[0, 0.4, 0]} castShadow>
         <cylinderGeometry args={[0.2, 0.05, 0.8, 16]} />
         <meshPhysicalMaterial 
-          color={isWorking ? "#4ade80" : color} 
-          transparent opacity={isWorking ? 0.9 : 0.6} 
-          emissive={isWorking ? "#22c55e" : "#000000"} 
-          emissiveIntensity={isWorking ? 1 : 0} 
+          color={isWorking ? color : "#94a3b8"} 
+          transparent opacity={isWorking ? 0.9 : 0.4} 
+          emissive={isWorking ? color : "#000000"} 
+          emissiveIntensity={isWorking ? 0.5 : 0} 
           roughness={0.2} metalness={0.8} 
         />
       </mesh>
 
-      <mesh position={[0, 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.4, 0.4, 0.02, 32]} />
-        <meshBasicMaterial color={isWorking ? "#4ade80" : color} transparent opacity={isWorking ? 0.8 : 0.3} />
-      </mesh>
+      <Html position={[0, isWorking ? 2 : 1.2, 0]} center zIndexRange={[100, 0]}>
+        {/* Tối ưu UI: CHỈ hiện Bảng Nhãn Tên To khi isWorking = true. Nếu false, chỉ hiện Avatar nhỏ xíu để đỡ vướng màn hình */}
+        <div className={`transition-all duration-500 ease-in-out ${isWorking ? 'scale-125 opacity-100 flex flex-col items-center animate-bounce' : 'scale-50 opacity-0 hidden'}`}>
+           <div className={`relative rounded-full p-0.5 bg-white shadow-[0_0_20px_rgba(0,0,0,0.2)]`}>
+             <img src={avatar} className="w-12 h-12 border-2 rounded-full border-white object-cover" alt={name} />
+           </div>
+           <div className="mt-2 bg-white/95 backdrop-blur shadow-xl px-3 py-1.5 rounded-full border border-gray-200 flex flex-col items-center whitespace-nowrap min-w-[120px]">
+             <span className="text-gray-900 text-[11px] font-bold">{name}</span>
+             <span style={{color: color}} className="text-[9px] font-black uppercase mt-0.5 tracking-wider">{role}</span>
+           </div>
+        </div>
 
-      <Html position={[0, isWorking ? 1.8 : 1.2, 0]} center zIndexRange={[100, 0]}>
-        <div className={`transition-all duration-500 ease-in-out ${isWorking ? 'scale-125 opacity-100 flex flex-col items-center animate-bounce' : 'scale-100 opacity-80 flex flex-col items-center hover:opacity-100'}`}>
-           <div className={`relative rounded-full p-0.5 ${isWorking ? 'bg-green-400 shadow-[0_0_30px_rgba(74,222,128,1)]' : 'bg-slate-400'}`}>
-             <img src={avatar} className={`${isWorking ? 'w-16 h-16 border-4' : 'w-10 h-10 border-2'} rounded-full border-white object-cover transition-all`} alt={name} />
-           </div>
-           
-           <div className={`mt-2 bg-white/95 backdrop-blur shadow-xl px-2 py-1 rounded border border-gray-200 flex flex-col items-center whitespace-nowrap ${isWorking ? 'min-w-[120px]' : 'scale-75'}`}>
-             <span className="text-gray-900 text-[10px] font-bold">{name}</span>
-             {isWorking && <span style={{color: color}} className="text-[9px] font-black uppercase mt-0.5 tracking-wider">{role}</span>}
-           </div>
+        {/* Trạng thái tắt làm việc: Chấm Avatar bé xíu */}
+        <div className={`transition-all duration-500 ease-in-out ${!isWorking ? 'opacity-60 hover:opacity-100 cursor-pointer' : 'opacity-0 hidden'}`}>
+          <img src={avatar} className="w-6 h-6 rounded-full border-2 border-white/50 object-cover grayscale brightness-125" alt="Inactive" />
         </div>
       </Html>
     </group>
@@ -190,11 +177,13 @@ function DeskCluster({ startX, startZ, count, layoutCols, departmentName, rolePr
   for (let i = 0; i < count; i++) {
     const row = Math.floor(i / layoutCols);
     const col = i % layoutCols;
-    const x = startX + col * 1.8;
-    const z = startZ + row * 2.5;
+    
+    // Nới rộng khoảng cách giữa các bàn ra để không bị ngộp thở
+    const x = startX + col * 2.2;
+    const z = startZ + row * 3.0;
 
     const rotationY = row % 2 === 0 ? 0 : Math.PI;
-    const adjustedZ = row % 2 === 0 ? z : z + 1;
+    const adjustedZ = row % 2 === 0 ? z : z + 1.2;
 
     desks.push(
       <group key={`${activeId}-${i}`} position={[x, 0, adjustedZ]}>
@@ -216,34 +205,56 @@ function DeskCluster({ startX, startZ, count, layoutCols, departmentName, rolePr
 }
 
 function DepartmentRoom({ startX, startZ, count, layoutCols, departmentName, rolePrefix, color, activeId, activeAgent }: any) {
-  const roomWidth = layoutCols * 1.8 + 1;
-  const roomDepth = Math.ceil(count/layoutCols) * 2.5 + 1;
-  const centerX = startX + roomWidth/2 - 0.5 - 0.9;
-  const centerZ = startZ + roomDepth/2 - 0.5;
+  // Diện tích mảng khối lớn hơn nhiều
+  const roomWidth = layoutCols * 2.2 + 2;
+  const roomDepth = Math.ceil(count/layoutCols) * 3.0 + 2;
+  
+  const centerX = startX + (layoutCols*2.2)/2 - 1.1;
+  const centerZ = startZ + (Math.ceil(count/layoutCols)*3.0)/2 - 1.0;
+
+  const isWorking = activeAgent === activeId;
 
   return (
     <group>
+      {/* Thảm sàn riêng của từng phòng chứa */}
       <Plane args={[roomWidth, roomDepth]} position={[centerX, 0.01, centerZ]} rotation={[-Math.PI/2, 0, 0]}>
-        <meshStandardMaterial color={color} transparent opacity={0.05} />
+        <meshStandardMaterial color={isWorking ? color : "#ffffff"} transparent opacity={isWorking ? 0.2 : 0.8} />
       </Plane>
-      {/* Vách kính bao quanh (4 vách) phát sáng neon */}
-      <Box args={[roomWidth, 1.5, 0.05]} position={[centerX, 0.75, centerZ + roomDepth/2]}>
-        <meshPhysicalMaterial transmission={0.9} roughness={0.1} transparent opacity={0.2} color={color} emissive={color} emissiveIntensity={0.1} />
+      
+      {/* Vách ngăn VĂN PHÒNG (Nửa gỗ trắng nửa kính) xung quanh */}
+      <Box args={[roomWidth, 0.8, 0.2]} position={[centerX, 0.4, centerZ + roomDepth/2]}>
+        <meshStandardMaterial color="#f8fafc" />
       </Box>
-      <Box args={[roomWidth, 1.5, 0.05]} position={[centerX, 0.75, centerZ - roomDepth/2]}>
-        <meshPhysicalMaterial transmission={0.9} roughness={0.1} transparent opacity={0.2} color={color} emissive={color} emissiveIntensity={0.1} />
-      </Box>
-      <Box args={[0.05, 1.5, roomDepth]} position={[centerX - roomWidth/2, 0.75, centerZ]}>
-        <meshPhysicalMaterial transmission={0.9} roughness={0.1} transparent opacity={0.2} color={color} emissive={color} emissiveIntensity={0.1} />
-      </Box>
-      <Box args={[0.05, 1.5, roomDepth]} position={[centerX + roomWidth/2, 0.75, centerZ]}>
-        <meshPhysicalMaterial transmission={0.9} roughness={0.1} transparent opacity={0.2} color={color} emissive={color} emissiveIntensity={0.1} />
+      <Box args={[roomWidth, 1.2, 0.1]} position={[centerX, 1.4, centerZ + roomDepth/2]}>
+        <meshPhysicalMaterial transmission={0.9} roughness={0.1} transparent opacity={0.3} color="#ffffff" />
       </Box>
 
-      <Html position={[centerX, 3, centerZ]} center zIndexRange={[100, 0]}>
-        <div style={{borderColor: color}} className="px-4 py-2 bg-white/90 backdrop-blur rounded shadow-lg border-2 text-center pointer-events-none">
+      <Box args={[roomWidth, 0.8, 0.2]} position={[centerX, 0.4, centerZ - roomDepth/2]}>
+        <meshStandardMaterial color="#f8fafc" />
+      </Box>
+      <Box args={[roomWidth, 1.2, 0.1]} position={[centerX, 1.4, centerZ - roomDepth/2]}>
+        <meshPhysicalMaterial transmission={0.9} roughness={0.1} transparent opacity={0.3} color="#ffffff" />
+      </Box>
+
+      <Box args={[0.2, 0.8, roomDepth]} position={[centerX - roomWidth/2, 0.4, centerZ]}>
+        <meshStandardMaterial color="#f8fafc" />
+      </Box>
+      <Box args={[0.1, 1.2, roomDepth]} position={[centerX - roomWidth/2, 1.4, centerZ]}>
+        <meshPhysicalMaterial transmission={0.9} roughness={0.1} transparent opacity={0.3} color="#ffffff" />
+      </Box>
+
+      <Box args={[0.2, 0.8, roomDepth]} position={[centerX + roomWidth/2, 0.4, centerZ]}>
+        <meshStandardMaterial color="#f8fafc" />
+      </Box>
+      <Box args={[0.1, 1.2, roomDepth]} position={[centerX + roomWidth/2, 1.4, centerZ]}>
+        <meshPhysicalMaterial transmission={0.9} roughness={0.1} transparent opacity={0.3} color="#ffffff" />
+      </Box>
+
+      {/* Bảng Tên Phòng Ban (Thiết kế thanh lịch) */}
+      <Html position={[centerX, 3.5, centerZ]} center zIndexRange={[100, 0]}>
+        <div style={{borderColor: color}} className={`transition-all duration-700 px-6 py-2 bg-white/95 backdrop-blur-md rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.1)] border-t-4 text-center pointer-events-none ${isWorking ? 'scale-125' : 'scale-100 opacity-90'}`}>
           <h3 style={{color: color}} className="text-sm font-black uppercase tracking-widest">{departmentName}</h3>
-          <p className="text-gray-500 text-[10px] font-bold">{count} Nhân sự</p>
+          <p className="text-gray-500 text-[11px] font-medium">{count} Chuyên viên</p>
         </div>
       </Html>
 
@@ -257,7 +268,7 @@ function DepartmentRoom({ startX, startZ, count, layoutCols, departmentName, rol
 }
 
 // =========================================================
-// MAIN ENVIRONMENT: KHU VỰC ĐẠI CÔNG SỞ 52 NHÂN SỰ
+// MAIN ENVIRONMENT: TOÀ NHÀ CÔNG SỞ TRẮNG SÁNG & RỘNG LỚN
 // =========================================================
 interface Office3DProps {
   activeAgent: string | null;
@@ -265,113 +276,118 @@ interface Office3DProps {
 
 export default function Office3D({ activeAgent }: Office3DProps) {
   return (
-    <Canvas shadows camera={{ position: [0, 20, 25], fov: 40 }}>
-      {/* Không gian nội thất có màu nền Sci-Fi tối */}
-      <color attach="background" args={["#020617"]} /> 
-      <fog attach="fog" args={["#020617", 20, 70]} />
+    <Canvas shadows camera={{ position: [0, 40, 50], fov: 45 }}>
+      {/* Bầu trời buổi sáng mát mẻ */}
+      <color attach="background" args={["#e0f2fe"]} /> 
+      <fog attach="fog" args={["#e0f2fe", 60, 150]} />
 
-      <Suspense fallback={<Html center><div className="px-6 py-3 bg-white rounded-xl shadow-2xl font-bold text-blue-600 border border-blue-100">Loading Mega Corporation (52 Agents)...</div></Html>}>
+      <Suspense fallback={<Html center><div className="px-6 py-3 bg-white rounded-xl shadow-2xl font-bold text-blue-600 border border-blue-100">Loading Silicon Valley Campus...</div></Html>}>
         
-        <ambientLight intensity={0.4} />
-        <hemisphereLight intensity={0.5} color="#38bdf8" groundColor="#0f172a" />
+        <ambientLight intensity={1.2} />
+        <hemisphereLight intensity={0.6} color="#ffffff" groundColor="#f8fafc" />
         <directionalLight 
-          position={[20, 30, -10]} 
+          position={[30, 50, -20]} 
           castShadow 
-          intensity={0.8}
-          color="#e0f2fe"
-          shadow-mapSize={[2048, 2048]}
-          shadow-camera-left={-20}
-          shadow-camera-right={20}
-          shadow-camera-top={20}
-          shadow-camera-bottom={-20}
+          intensity={1.5}
+          color="#ffffff"
+          shadow-mapSize={[4096, 4096]}
+          shadow-camera-left={-40}
+          shadow-camera-right={40}
+          shadow-camera-top={40}
+          shadow-camera-bottom={-40}
         />
 
         <OrbitControls 
           enableDamping 
           minPolarAngle={Math.PI / 6} 
           maxPolarAngle={Math.PI / 2 - 0.05}
-          maxDistance={50}
+          maxDistance={90}
           target={[0, 0, 0]}
         />
 
-        {/* Lát sàn Gạch tối màu phản quang */}
-        <Plane args={[70, 70]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.01, 0]}>
-          <meshStandardMaterial color="#020617" roughness={0.1} metalness={0.9} />
+        {/* Lát sàn Gỗ vân sáng Khổng lổ cho toàn cty */}
+        <Plane args={[120, 100]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.01, 0]}>
+          <meshStandardMaterial color="#fffbeb" roughness={0.7} metalness={0.1} /> 
         </Plane>
         
-        {/* Lưới Grid Cyberpunk */}
-        <gridHelper args={[70, 35, "#0ea5e9", "#1e293b"]} position={[0, 0, 0]} />
+        {/* Lưới phân định sàn tinh tế thay vì TRON màu tối */}
+        <gridHelper args={[120, 60, "#d6d3d1", "#f5f5f4"]} position={[0, 0, 0]} />
 
-        <ContactShadows position={[0, 0, 0]} opacity={0.3} scale={40} blur={2} far={10} />
+        <ContactShadows position={[0, 0, 0]} opacity={0.2} scale={80} blur={2.5} far={10} />
 
         {/* ======================================================
-            TƯỜNG KIẾN TRÚC VÀ CỘT TRỤ
+            TƯỜNG KÍNH BAO NGOÀI TOÀ NHÀ (OUTER GLASS BUILDING)
+        ====================================================== */}
+        {/* Front & Back */}
+        <Box args={[116, 12, 0.4]} position={[0, 6, -48]}><meshPhysicalMaterial transmission={0.9} opacity={0.2} transparent color="#e0f2fe" roughness={0.1}/></Box>
+        <Box args={[116, 12, 0.4]} position={[0, 6, 48]}><meshPhysicalMaterial transmission={0.9} opacity={0.2} transparent color="#e0f2fe" roughness={0.1}/></Box>
+        {/* Left & Right */}
+        <Box args={[0.4, 12, 96]} position={[-58, 6, 0]}><meshPhysicalMaterial transmission={0.9} opacity={0.2} transparent color="#e0f2fe" roughness={0.1}/></Box>
+        <Box args={[0.4, 12, 96]} position={[58, 6, 0]}><meshPhysicalMaterial transmission={0.9} opacity={0.2} transparent color="#e0f2fe" roughness={0.1}/></Box>
+
+        {/* ======================================================
+            TƯỜNG KIẾN TRÚC VÀ CỘT TRỤ BÊN TRONG
         ====================================================== */}
         <ReceptionWall />
         
-        {/* Hàng Cột trụ giữa công ty */}
-        <ArchitectPillar position={[-6, 0, -3]} />
-        <ArchitectPillar position={[3, 0, -3]} />
-        <ArchitectPillar position={[-6, 0, 7]} />
-        <ArchitectPillar position={[3, 0, 7]} />
+        {/* Hàng Cột Khổng Lồ Giữa Khuôn Viên */}
+        <ArchitectPillar position={[-20, 0, -15]} />
+        <ArchitectPillar position={[20, 0, -15]} />
+        <ArchitectPillar position={[-20, 0, 15]} />
+        <ArchitectPillar position={[20, 0, 15]} />
 
         {/* ======================================================
-            MẢNG XANH (GREENERY)
+            MẢNG XANH - ĐƯỢC PHÂN BỔ TRẢI RỘNG KHẮP NƠI
         ====================================================== */}
-        {/* Chậu cây lớn ở các góc */}
-        <IndoorPlant position={[-14, 0, -14]} />
-        <IndoorPlant position={[14, 0, -14]} />
-        <IndoorPlant position={[-14, 0, 10]} />
-        <IndoorPlant position={[12, 0, 8]} />
-        <IndoorPlant position={[-7, 0, -2]} />
-        <IndoorPlant position={[6, 0, 2]} />
-        <IndoorPlant position={[4, 0, -13]} />
-        <IndoorPlant position={[-5, 0, -5]} />
+        <IndoorPlant position={[-30, 0, -25]} />
+        <IndoorPlant position={[30, 0, -25]} />
+        <IndoorPlant position={[-30, 0, 25]} />
+        <IndoorPlant position={[30, 0, 25]} />
+        <IndoorPlant position={[-10, 0, -5]} />
+        <IndoorPlant position={[10, 0, -5]} />
 
-        {/* Hộp cây Planter tách lối đi */}
-        <PlanterBox position={[-6, 0, -11]} rotation={[0, 0, 0]} />
-        <PlanterBox position={[2, 0, -11]} rotation={[0, 0, 0]} />
-        <PlanterBox position={[-2, 0, -2]} rotation={[0, Math.PI/2, 0]} />
-        <PlanterBox position={[-2, 0, 2]} rotation={[0, Math.PI/2, 0]} />
+        <PlanterBox position={[-15, 0, 0]} rotation={[0, 0, 0]} />
+        <PlanterBox position={[15, 0, 0]} rotation={[0, 0, 0]} />
+        <PlanterBox position={[0, 0, 10]} rotation={[0, Math.PI/2, 0]} />
 
         {/* =====================================================
-            6 KHỐI PHÒNG KÍNH & 52 NHÂN SỰ
+            6 KHỐI PHÒNG BAN ĐƯỢC GIÃN CÁCH TUYỆT ĐỐI (TRÁNH NGỘP)
         ===================================================== */}
         
-        {/* 1. Ban Giám Đốc (4 Người) */}
+        {/* 1. Ban Giám Đốc */}
         <DepartmentRoom 
-          startX={-3} startZ={-15} count={4} layoutCols={4} 
-          departmentName="C-Level Board" rolePrefix="Chief" color="#3b82f6" activeId="ceo" activeAgent={activeAgent} 
+          startX={-4} startZ={-25} count={4} layoutCols={4} 
+          departmentName="C-Level Board" rolePrefix="Chief" color="#2563eb" activeId="ceo" activeAgent={activeAgent} 
         />
 
-        {/* 2. Khối Product & Design (8 Người) */}
+        {/* 2. Khối Product & Design */}
         <DepartmentRoom 
-          startX={-12} startZ={-8} count={8} layoutCols={4} 
-          departmentName="Product & UX/UI" rolePrefix="PM/Designer" color="#8b5cf6" activeId="pm" activeAgent={activeAgent} 
+          startX={-35} startZ={-15} count={8} layoutCols={4} 
+          departmentName="Product & UX/UI" rolePrefix="PM/Designer" color="#7c3aed" activeId="pm" activeAgent={activeAgent} 
         />
 
-        {/* 3. Khối Frontend (12 Người) */}
+        {/* 3. Khối Frontend */}
         <DepartmentRoom 
-          startX={-3} startZ={-8} count={12} layoutCols={6} 
-          departmentName="Frontend Web/App" rolePrefix="FE Dev" color="#ec4899" activeId="frontend" activeAgent={activeAgent} 
+          startX={-5} startZ={-15} count={12} layoutCols={6} 
+          departmentName="Frontend Web/App" rolePrefix="FE Dev" color="#db2777" activeId="frontend" activeAgent={activeAgent} 
         />
 
-        {/* 4. Khối Backend & Systems (15 Người) */}
+        {/* 4. Khối Backend & Systems */}
         <DepartmentRoom 
-          startX={9} startZ={-8} count={15} layoutCols={5} 
-          departmentName="Backend & DevOps" rolePrefix="System Eng" color="#10b981" activeId="backend" activeAgent={activeAgent} 
+          startX={25} startZ={-15} count={15} layoutCols={5} 
+          departmentName="Backend & DevOps" rolePrefix="System Eng" color="#059669" activeId="backend" activeAgent={activeAgent} 
         />
 
-        {/* 5. Khối QA & Security (8 Người) */}
+        {/* 5. Khối QA & Security */}
         <DepartmentRoom 
-          startX={2} startZ={2} count={8} layoutCols={4} 
-          departmentName="QA & Security" rolePrefix="Pentester/QA" color="#f59e0b" activeId="qa" activeAgent={activeAgent} 
+          startX={-20} startZ={10} count={8} layoutCols={4} 
+          departmentName="QA & Security" rolePrefix="Pentester/QA" color="#d97706" activeId="qa" activeAgent={activeAgent} 
         />
 
-        {/* 6. Khối Business Ops (5 Người) */}
+        {/* 6. Khối Business Ops */}
         <DepartmentRoom 
-          startX={-8} startZ={2} count={5} layoutCols={5} 
-          departmentName="Finance & HR" rolePrefix="Specialist" color="#0ea5e9" activeId="accountant" activeAgent={activeAgent} 
+          startX={10} startZ={10} count={5} layoutCols={5} 
+          departmentName="Finance & HR" rolePrefix="Specialist" color="#0284c7" activeId="accountant" activeAgent={activeAgent} 
         />
 
       </Suspense>
