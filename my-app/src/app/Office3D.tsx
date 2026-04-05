@@ -1,7 +1,8 @@
 "use client";
-import React, { useRef, useEffect, Suspense } from "react";
+import React, { useRef, useEffect, Suspense, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Html, Box, Plane, Environment, ContactShadows, useGLTF, useAnimations, Clone } from "@react-three/drei";
+import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
 
 // =========================================================
@@ -62,14 +63,19 @@ function OfficeChair({ position, rotation = 0 }: any) {
 }
 
 // =======================================================================================
-// 👉 NHÂN SỰ MODEL 3D CHUẨN (ĐÃ TẢI FILE `.glb`)
+// 👉 NHÂN SỰ MODEL 3D CHUẨN (ĐÃ TẢI FILE `.glb` CÓ XƯƠNG - SKINNED MESH)
 // =======================================================================================
 function AgentCharacterGLTF({ position, name, role, isWorking, avatar }: any) {
-  // Nạp file 3D từ thư mục public/models/
+  // Nạp 1 bản 3D duy nhất vào bộ nhớ cache
   const { scene, animations } = useGLTF('/models/worker.glb');
-  const { actions } = useAnimations(animations, scene);
+  
+  // NHÂN BẢN AN TOÀN (Clone) CÓ GIỮ NGUYÊN CẤU TRÚC XƯƠNG BẰNG SkeletonUtils
+  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
 
-  // Điều khiển hiệu ứng nhảy mú/làm việc dựa vào isWorking
+  // Gắn Hoạt ảnh vào chính bản sao (clone) này!
+  const { actions } = useAnimations(animations, clone);
+
+  // Điều khiển các Hoạt ảnh tương ứng của Robot
   useEffect(() => {
     // RobotExpressive animations: 'Dance', 'Death', 'Idle', 'Jump', 'No', 'Punch', 'Running', 'Sitting', 'Standing', 'ThumbsUp', 'Walking', 'WalkJump', 'Yes'
     if (actions) {
@@ -87,7 +93,7 @@ function AgentCharacterGLTF({ position, name, role, isWorking, avatar }: any) {
 
   return (
     <group position={position}>
-      <Clone object={scene} castShadow scale={0.3} position={[0, 0, 0]} rotation={[0, Math.PI, 0]} />
+      <primitive object={clone} castShadow scale={0.3} position={[0, -0.05, 0]} rotation={[0, Math.PI, 0]} />
       <Html position={[0, 1.8, 0]} center zIndexRange={[100, 0]}>
         <div className={`flex flex-col items-center transition-all duration-300 ${isWorking ? 'animate-bounce' : ''}`}>
            <div className={`relative rounded-full p-0.5 ${isWorking ? 'bg-green-400 shadow-[0_0_20px_rgba(74,222,128,0.7)]' : 'bg-gray-300'}`}>
@@ -181,8 +187,8 @@ function PrivateOfficeRoom({ position, roomName, color, deskRotation = 0, agentP
       <ModernDesk position={[0, 0, -1]} rotation={deskRotation} partitionColor={color} />
       <OfficeChair position={[0, 0, 0]} rotation={deskRotation} />
 
-      {/* Nhân sự nằm chính xác trên ghế */}
-      <AgentCharacter position={[0, 0, 0]} {...agentProps} />
+      {/* Bật Dàn Robot 3D với SkinnedMesh! */}
+      <AgentCharacterGLTF position={[0, 0, 0]} {...agentProps} />
     </group>
   );
 }
