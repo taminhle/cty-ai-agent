@@ -120,35 +120,117 @@ function OfficeChair({ position, rotation }: any) {
 }
 
 function AgentCharacter({ position, name, role, isWorking, avatar, color }: any) {
-  const meshRef = useRef<THREE.Mesh>(null!);
+  const groupRef = useRef<THREE.Group>(null!);
+  const leftArmGroupRef = useRef<THREE.Group>(null!);
+  const rightArmGroupRef = useRef<THREE.Group>(null!);
+  const headRef = useRef<THREE.Mesh>(null!);
+
+  // Phân bổ màu sắc ngẫu nhiên nhưng cố định cho từng nhân viên (để trông giống công ty thật đang mặc đồ tự do)
+  const randomSeed = name.charCodeAt(name.length - 1) + name.length;
+  const shirtColors = ["#1e3a8a", "#047857", "#92400e", "#b91c1c", "#475569", "#7c3aed"];
+  const shirtColor = shirtColors[randomSeed % shirtColors.length];
+  const pantsColor = randomSeed % 2 === 0 ? "#1e40af" : "#27272a"; // Quần jean hoặc quần âu đen
+  const skinColor = "#fcd34d";
 
   useFrame((state) => {
-    if (meshRef.current) {
-      if (isWorking) {
-        meshRef.current.position.y = 0.5 + Math.sin(state.clock.elapsedTime * 8) * 0.1;
-        meshRef.current.rotation.y += 0.05;
-      } else {
-        meshRef.current.position.y = 0.4 + Math.sin(state.clock.elapsedTime * 2 + position[0]) * 0.02;
-        meshRef.current.rotation.y += 0.01;
-      }
+    if (!groupRef.current || !leftArmGroupRef.current || !rightArmGroupRef.current || !headRef.current) return;
+    const t = state.clock.elapsedTime;
+    const offset = position[0] + position[2]; // Lệch pha hoạt ảnh cho từng người
+
+    if (isWorking) {
+      // Trạng thái Bận rộn: Gõ phím liên tục, nảy lên trên ghế
+      leftArmGroupRef.current.rotation.x = Math.sin(t * 20 + offset) * 0.4 - 0.5;
+      rightArmGroupRef.current.rotation.x = Math.sin(t * 20 + offset + Math.PI) * 0.4 - 0.5;
+      
+      headRef.current.rotation.x = Math.sin(t * 4 + offset) * 0.1;
+      
+      groupRef.current.position.y = 0.45 + Math.sin(t * 10 + offset) * 0.05;
+      groupRef.current.position.z = Math.sin(t * 5 + offset) * 0.02; // Chồm tới chồm lui xíu
+    } else {
+      // Trạng thái Nghỉ: Thở nhẹ nhàng, đưa tay về phía trước bàn
+      groupRef.current.position.y = 0.4 + Math.sin(t * 2 + offset) * 0.02;
+      groupRef.current.position.z = 0;
+      
+      leftArmGroupRef.current.rotation.x = -0.3; // Đặt tay lên bàn thư giãn
+      rightArmGroupRef.current.rotation.x = -0.3;
+      
+      headRef.current.rotation.x = Math.sin(t + offset) * 0.05;
     }
   });
 
   return (
     <group position={position}>
-      {/* Hologram Body */}
-      <mesh ref={meshRef} position={[0, 0.4, 0]} castShadow>
-        <cylinderGeometry args={[0.2, 0.05, 0.8, 16]} />
-        <meshPhysicalMaterial 
-          color={isWorking ? color : "#94a3b8"} 
-          transparent opacity={isWorking ? 0.9 : 0.4} 
-          emissive={isWorking ? color : "#000000"} 
-          emissiveIntensity={isWorking ? 0.5 : 0} 
-          roughness={0.2} metalness={0.8} 
-        />
-      </mesh>
+      {/* 3D HUMANOID FIGURE */}
+      <group ref={groupRef} position={[0, 0.4, 0]}>
+        
+        {/* Torso (Thân) */}
+        <mesh position={[0, 0.2, 0]} castShadow>
+          <boxGeometry args={[0.25, 0.35, 0.15]} />
+          {/* Khi isWorking = true -> Đột biến sáng rực lên theo màu phòng ban! */}
+          <meshStandardMaterial 
+            color={isWorking ? color : shirtColor} 
+            emissive={isWorking ? color : "#000000"} 
+            emissiveIntensity={isWorking ? 0.6 : 0} 
+          />
+        </mesh>
+        
+        {/* Head (Đầu) */}
+        <mesh ref={headRef} position={[0, 0.45, 0]} castShadow>
+          <sphereGeometry args={[0.12, 16, 16]} />
+          <meshStandardMaterial color={skinColor} roughness={0.4} />
+          {/* Mắt (Trang trí thêm cho sinh động) */}
+          <mesh position={[-0.04, 0.02, -0.11]}><boxGeometry args={[0.02, 0.02, 0.02]} /><meshBasicMaterial color="#000" /></mesh>
+          <mesh position={[0.04, 0.02, -0.11]}><boxGeometry args={[0.02, 0.02, 0.02]} /><meshBasicMaterial color="#000" /></mesh>
+        </mesh>
 
-      <Html position={[0, isWorking ? 2 : 1.2, 0]} center zIndexRange={[100, 0]}>
+        {/* Left Arm (Cánh tay trái - Pivot tại vai) */}
+        <group ref={leftArmGroupRef} position={[-0.18, 0.35, 0]}>
+          <mesh position={[0, -0.15, 0]} castShadow>
+            <boxGeometry args={[0.07, 0.3, 0.07]} />
+            <meshStandardMaterial color={isWorking ? color : shirtColor} emissive={isWorking ? color : "#000000"} emissiveIntensity={isWorking ? 0.6 : 0}/>
+          </mesh>
+        </group>
+
+        {/* Right Arm (Cánh tay phải - Pivot tại vai) */}
+        <group ref={rightArmGroupRef} position={[0.18, 0.35, 0]}>
+          <mesh position={[0, -0.15, 0]} castShadow>
+            <boxGeometry args={[0.07, 0.3, 0.07]} />
+            <meshStandardMaterial color={isWorking ? color : shirtColor} emissive={isWorking ? color : "#000000"} emissiveIntensity={isWorking ? 0.6 : 0}/>
+          </mesh>
+        </group>
+
+        {/* Left Leg (Chân trái - Tư thế đang ngồi ghế) */}
+        <group position={[-0.08, 0.0, 0]}>
+          {/* Đùi (Bends backward relative to character facing, `-Z` is front of char) */}
+          <mesh position={[0, 0, -0.15]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+            <boxGeometry args={[0.09, 0.35, 0.09]} />
+            <meshStandardMaterial color={pantsColor} />
+          </mesh>
+          {/* Cẳng chân đi xuống */}
+          <mesh position={[0, -0.15, -0.3]} castShadow>
+            <boxGeometry args={[0.09, 0.35, 0.09]} />
+            <meshStandardMaterial color={pantsColor} />
+          </mesh>
+        </group>
+
+        {/* Right Leg (Chân phải - Tư thế đang ngồi ghế) */}
+        <group position={[0.08, 0.0, 0]}>
+           {/* Đùi */}
+           <mesh position={[0, 0, -0.15]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+            <boxGeometry args={[0.09, 0.35, 0.09]} />
+            <meshStandardMaterial color={pantsColor} />
+          </mesh>
+          {/* Cẳng chân đi xuống */}
+          <mesh position={[0, -0.15, -0.3]} castShadow>
+            <boxGeometry args={[0.09, 0.35, 0.09]} />
+            <meshStandardMaterial color={pantsColor} />
+          </mesh>
+        </group>
+
+      </group>
+
+      {/* HTML Nhãn Tên */}
+      <Html position={[0, isWorking ? 2.5 : 1.2, 0]} center zIndexRange={[100, 0]}>
         {/* Tối ưu UI: CHỈ hiện Bảng Nhãn Tên To khi isWorking = true. Nếu false, chỉ hiện Avatar nhỏ xíu để đỡ vướng màn hình */}
         <div className={`transition-all duration-500 ease-in-out ${isWorking ? 'scale-125 opacity-100 flex flex-col items-center animate-bounce' : 'scale-50 opacity-0 hidden'}`}>
            <div className={`relative rounded-full p-0.5 bg-white shadow-[0_0_20px_rgba(0,0,0,0.2)]`}>
