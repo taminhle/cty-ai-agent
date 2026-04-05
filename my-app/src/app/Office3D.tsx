@@ -50,35 +50,89 @@ function RoomLabel({ name, position }: { name: string, position: [number, number
   );
 }
 
-// --- Nhân viên AI ---
+// --- Nhân viên AI (Thiết kế Người mặc Vest Low-Poly) ---
 function AgentCharacter({ position, color, name, role, isWorking }: any) {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const groupRef = useRef<THREE.Group>(null);
+  const leftArmRef = useRef<THREE.Mesh>(null);
+  const rightArmRef = useRef<THREE.Mesh>(null);
+  const headRef = useRef<THREE.Mesh>(null);
   
   useFrame((state) => {
-    if (meshRef.current) {
-      if (isWorking) {
-        // Nhảy nhót mạnh hơn khi làm việc
-        meshRef.current.position.y = 1.2 + Math.abs(Math.sin(state.clock.elapsedTime * 6)) * 0.4;
-        const material = meshRef.current.material as THREE.MeshStandardMaterial;
-        material.emissive.setHex(0x444444);
-      } else {
-        // Nghỉ ngơi
-        meshRef.current.position.y = THREE.MathUtils.lerp(meshRef.current.position.y, 1.0, 0.1);
-        const material = meshRef.current.material as THREE.MeshStandardMaterial;
-        material.emissive.setHex(0x000000);
-      }
+    if (!groupRef.current || !leftArmRef.current || !rightArmRef.current || !headRef.current) return;
+    
+    if (isWorking) {
+      // Gõ phím / tương tác nhịp nhàng
+      groupRef.current.position.y = position[1] + Math.abs(Math.sin(state.clock.elapsedTime * 8)) * 0.1;
+      leftArmRef.current.rotation.x = -Math.abs(Math.sin(state.clock.elapsedTime * 15)) * 0.3;
+      rightArmRef.current.rotation.x = -Math.abs(Math.cos(state.clock.elapsedTime * 15)) * 0.3;
+      headRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 5) * 0.1 + 0.1; // Cúi xuống gõ
+    } else {
+      // Trạng thái nghỉ
+      groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, position[1], 0.1);
+      leftArmRef.current.rotation.x = THREE.MathUtils.lerp(leftArmRef.current.rotation.x, 0, 0.1);
+      rightArmRef.current.rotation.x = THREE.MathUtils.lerp(rightArmRef.current.rotation.x, 0, 0.1);
+      headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, 0, 0.1);
     }
   });
 
+  // Quy định màu sắc (nếu là nữ thì cà vạt đổi màu theo role)
+  const suitColor = "#1a1a1a"; // Vest đen sang trọng như ảnh thật
+  const shirtColor = "#ffffff";
+  const tieColor = color === "#ec4899" ? "#ec4899" : "#111111"; // Anna có cà vạt hồng
+
   return (
-    <group position={position}>
-      <Cylinder ref={meshRef} args={[0.4, 0.4, 1.6, 32]} position={[0, 1.0, 0]} castShadow>
-        <meshStandardMaterial color={color} roughness={0.4} />
-      </Cylinder>
-      <Html position={[0, 2.8, 0]} center zIndexRange={[100, 0]}>
+    <group position={position} ref={groupRef}>
+      {/* Đầu (Head) */}
+      <Sphere ref={headRef} args={[0.25, 32, 32]} position={[0, 1.6, 0]} castShadow>
+        <meshStandardMaterial color="#fcd5ce" roughness={0.4} /> {/* Màu da */}
+      </Sphere>
+      
+      {/* Tóc (Hair) */}
+      <Box args={[0.55, 0.15, 0.55]} position={[0, 1.8, 0]} castShadow>
+         <meshStandardMaterial color="#212529" /> {/* Tóc đen */}
+      </Box>
+
+      {/* Áo Sơ mi trong (Shirt) */}
+      <Box args={[0.4, 0.8, 0.25]} position={[0, 0.95, 0]} castShadow>
+         <meshStandardMaterial color={shirtColor} />
+      </Box>
+
+      {/* Áo Vest ngoài */}
+      {/* Vạt vest trái */}
+      <Box args={[0.15, 0.8, 0.28]} position={[-0.15, 0.95, 0]} castShadow>
+         <meshStandardMaterial color={suitColor} roughness={0.8} />
+      </Box>
+      {/* Vạt vest phải */}
+      <Box args={[0.15, 0.8, 0.28]} position={[0.15, 0.95, 0]} castShadow>
+         <meshStandardMaterial color={suitColor} roughness={0.8} />
+      </Box>
+      {/* Lưng vest */}
+      <Box args={[0.45, 0.8, 0.1]} position={[0, 0.95, -0.1]} castShadow>
+         <meshStandardMaterial color={suitColor} roughness={0.8} />
+      </Box>
+      {/* Cà vạt */}
+      <Box args={[0.06, 0.4, 0.05]} position={[0, 1.1, 0.13]} castShadow>
+         <meshStandardMaterial color={tieColor} />
+      </Box>
+
+      {/* Quần ống suông (Pants/Skirt) */}
+      <Box args={[0.45, 0.55, 0.28]} position={[0, 0.25, 0]} castShadow>
+         <meshStandardMaterial color={suitColor} roughness={0.8} />
+      </Box>
+
+      {/* Hai cánh tay (Arms) */}
+      <Box ref={leftArmRef} args={[0.12, 0.7, 0.12]} position={[-0.3, 0.95, 0]} castShadow>
+         <meshStandardMaterial color={suitColor} roughness={0.8} />
+      </Box>
+      <Box ref={rightArmRef} args={[0.12, 0.7, 0.12]} position={[0.3, 0.95, 0]} castShadow>
+         <meshStandardMaterial color={suitColor} roughness={0.8} />
+      </Box>
+      
+      {/* Bảng tên (Label) */}
+      <Html position={[0, 2.2, 0]} center zIndexRange={[100, 0]}>
         <div className="bg-black/80 text-white px-3 py-1 rounded-md text-[11px] font-bold border border-white/30 whitespace-nowrap shadow-lg">
           {name}
-          <div className="text-blue-300 text-[9px] uppercase mt-0.5">{role}</div>
+          <div className="text-gray-300 text-[9px] uppercase mt-0.5">{role}</div>
         </div>
       </Html>
     </group>
