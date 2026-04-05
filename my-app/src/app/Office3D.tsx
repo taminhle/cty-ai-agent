@@ -5,27 +5,109 @@ import { OrbitControls, Html, Box, Plane, ContactShadows } from "@react-three/dr
 import * as THREE from "three";
 
 // =========================================================
+// KIẾN TRÚC MẢNG XANH VÀ CỘT TRỤ
+// =========================================================
+function IndoorPlant({ position }: any) {
+  return (
+    <group position={position}>
+      <mesh position={[0, 0.4, 0]} castShadow>
+        <cylinderGeometry args={[0.3, 0.2, 0.8, 16]} />
+        <meshStandardMaterial color="#f8fafc" roughness={0.9} />
+      </mesh>
+      <mesh position={[0, 1.2, 0]} castShadow>
+        <cylinderGeometry args={[0.05, 0.05, 1, 8]} />
+        <meshStandardMaterial color="#78350f" />
+      </mesh>
+      <mesh position={[0, 1.8, 0]} castShadow>
+        <sphereGeometry args={[0.8, 16, 16]} />
+        <meshStandardMaterial color="#22c55e" roughness={0.8} />
+      </mesh>
+      <mesh position={[-0.3, 1.5, 0.3]} castShadow>
+        <sphereGeometry args={[0.5, 16, 16]} />
+        <meshStandardMaterial color="#16a34a" roughness={0.8} />
+      </mesh>
+    </group>
+  );
+}
+
+function ArchitectPillar({ position }: any) {
+  return (
+    <group position={position}>
+      <mesh position={[0, 3, 0]} castShadow receiveShadow>
+        <boxGeometry args={[1, 6, 1]} />
+        <meshStandardMaterial color="#e2e8f0" roughness={0.7} />
+      </mesh>
+      <mesh position={[0, 0.2, 0]} castShadow>
+        <boxGeometry args={[1.2, 0.4, 1.2]} />
+        <meshStandardMaterial color="#94a3b8" />
+      </mesh>
+      <mesh position={[0, 5, 0.6]}>
+        <boxGeometry args={[0.2, 0.8, 0.1]} />
+        <meshBasicMaterial color="#fcd34d" />
+      </mesh>
+      <mesh position={[0, 5, -0.6]}>
+        <boxGeometry args={[0.2, 0.8, 0.1]} />
+        <meshBasicMaterial color="#fcd34d" />
+      </mesh>
+    </group>
+  );
+}
+
+function PlanterBox({ position, rotation }: any) {
+  return (
+    <group position={position} rotation={rotation}>
+      <mesh position={[0, 0.3, 0]} castShadow>
+        <boxGeometry args={[4, 0.6, 0.8]} />
+        <meshStandardMaterial color="#334155" />
+      </mesh>
+      {[-1.5, -0.5, 0.5, 1.5].map((x, i) => (
+        <mesh key={i} position={[x, 0.7, 0]} castShadow>
+          <sphereGeometry args={[0.4, 16, 16]} />
+          <meshStandardMaterial color="#15803d" roughness={0.9} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function ReceptionWall() {
+  return (
+    <group position={[0, 0, -18]}>
+      <mesh position={[0, 4, 0]} receiveShadow>
+        <boxGeometry args={[34, 8, 1]} />
+        <meshStandardMaterial color="#0f172a" roughness={0.5} />
+      </mesh>
+      <Html position={[0, 6, 0.6]} center zIndexRange={[100, 0]} transform>
+         <div className="bg-transparent text-center scale-[2]">
+            <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200 tracking-widest drop-shadow-[0_0_15px_rgba(250,204,21,0.8)]">
+              HOANG KIM CORPORATION
+            </h1>
+            <p className="text-yellow-100 text-sm tracking-[0.5em] mt-2 opacity-80 uppercase font-mono drop-shadow-[0_0_5px_rgba(250,204,21,0.5)]">
+              The AI Tech Giant
+            </p>
+         </div>
+      </Html>
+    </group>
+  );
+}
+
+// =========================================================
 // VẬT DỤNG VĂN PHÒNG CHUẨN
 // =========================================================
 function ModernDesk({ position, rotation, partitionColor }: any) {
   return (
     <group position={position} rotation={rotation}>
-      {/* Mặt bàn nổi */}
       <Box args={[1.6, 0.05, 0.8]} position={[0, 0.75, 0]} castShadow receiveShadow>
         <meshStandardMaterial color="#f8fafc" roughness={0.1} />
       </Box>
-      {/* Chân bàn */}
       <Box args={[0.05, 0.75, 0.6]} position={[-0.7, 0.375, 0]} castShadow><meshStandardMaterial color="#334155" /></Box>
       <Box args={[0.05, 0.75, 0.6]} position={[0.7, 0.375, 0]} castShadow><meshStandardMaterial color="#334155" /></Box>
-      {/* Vách ngăn Mini (Privacy Screen) gắn liền với bàn */}
       <Box args={[1.5, 0.4, 0.02]} position={[0, 0.95, -0.38]}>
         <meshStandardMaterial color={partitionColor} transparent opacity={0.8} />
       </Box>
-      {/* Màn hình Máy tính mỏng */}
       <Box args={[0.6, 0.35, 0.02]} position={[0, 0.95, -0.1]} rotation={[-0.1, 0, 0]} castShadow>
         <meshStandardMaterial color="#0f172a" />
       </Box>
-      {/* Chân màn hình */}
       <Box args={[0.1, 0.1, 0.1]} position={[0, 0.8, -0.15]}><meshStandardMaterial color="#94a3b8" /></Box>
     </group>
   );
@@ -43,9 +125,6 @@ function OfficeChair({ position, rotation }: any) {
   );
 }
 
-// =======================================================================================
-// 👉 HOLOGRAM NHÂN BẢN HÀNG LOẠT (Tối ưu nhưng luôn hiện rõ)
-// =======================================================================================
 function AgentCharacter({ position, name, role, isWorking, avatar, color }: any) {
   const meshRef = useRef<THREE.Mesh>(null!);
 
@@ -95,9 +174,6 @@ function AgentCharacter({ position, name, role, isWorking, avatar, color }: any)
   );
 }
 
-// =========================================================
-// TỔ HỢP CỤM BÀN LÀM VIỆC (OPEN SPACE DESKS)
-// =========================================================
 function DeskCluster({ startX, startZ, count, layoutCols, departmentName, rolePrefix, color, activeId, activeAgent }: any) {
   const avatars = ['/anna.png', '/sophia.png', '/max.png'];
   const isWorking = activeAgent === activeId;
@@ -131,9 +207,6 @@ function DeskCluster({ startX, startZ, count, layoutCols, departmentName, rolePr
   return <group>{desks}</group>;
 }
 
-// =========================================================
-// KHU VỰC PHÒNG BAN KÍNH TÁCH BIỆT (DEPARTMENT ROOM)
-// =========================================================
 function DepartmentRoom({ startX, startZ, count, layoutCols, departmentName, rolePrefix, color, activeId, activeAgent }: any) {
   const roomWidth = layoutCols * 1.8 + 1;
   const roomDepth = Math.ceil(count/layoutCols) * 2.5 + 1;
@@ -142,12 +215,10 @@ function DepartmentRoom({ startX, startZ, count, layoutCols, departmentName, rol
 
   return (
     <group>
-      {/* Nền phòng ban */}
       <Plane args={[roomWidth, roomDepth]} position={[centerX, 0.01, centerZ]} rotation={[-Math.PI/2, 0, 0]}>
         <meshStandardMaterial color={color} transparent opacity={0.05} />
       </Plane>
       
-      {/* Vách kính bao quanh (4 vách) */}
       <Box args={[roomWidth, 1.5, 0.1]} position={[centerX, 0.75, centerZ + roomDepth/2]}>
         <meshPhysicalMaterial transmission={0.9} roughness={0.1} transparent opacity={0.2} color={color} />
       </Box>
@@ -161,7 +232,6 @@ function DepartmentRoom({ startX, startZ, count, layoutCols, departmentName, rol
         <meshPhysicalMaterial transmission={0.9} roughness={0.1} transparent opacity={0.2} color={color} />
       </Box>
 
-      {/* Biển tên Phòng Ban siêu to lơ lửng */}
       <Html position={[centerX, 3, centerZ]} center zIndexRange={[100, 0]}>
         <div style={{borderColor: color}} className="px-4 py-2 bg-white/90 backdrop-blur rounded shadow-lg border-2 text-center pointer-events-none">
           <h3 style={{color: color}} className="text-sm font-black uppercase tracking-widest">{departmentName}</h3>
@@ -169,7 +239,6 @@ function DepartmentRoom({ startX, startZ, count, layoutCols, departmentName, rol
         </div>
       </Html>
 
-      {/* Cụm bàn làm việc bên trong */}
       <DeskCluster 
         startX={startX} startZ={startZ} count={count} layoutCols={layoutCols} 
         departmentName={departmentName} rolePrefix={rolePrefix} color={color} 
@@ -189,7 +258,9 @@ interface Office3DProps {
 export default function Office3D({ activeAgent }: Office3DProps) {
   return (
     <Canvas shadows camera={{ position: [0, 20, 25], fov: 40 }}>
+      {/* Không gian nội thất có màu sơn tường ấm nhẹ */}
       <color attach="background" args={["#e2e8f0"]} /> 
+      <fog attach="fog" args={["#e2e8f0", 30, 80]} />
 
       <Suspense fallback={<Html center><div className="px-6 py-3 bg-white rounded-xl shadow-2xl font-bold text-blue-600 border border-blue-100">Loading Mega Corporation (52 Agents)...</div></Html>}>
         
@@ -214,11 +285,50 @@ export default function Office3D({ activeAgent }: Office3DProps) {
           target={[0, 0, 0]}
         />
 
-        <Plane args={[50, 50]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.01, 0]}>
-          <meshStandardMaterial color="#f1f5f9" roughness={0.8} />
+        {/* Lát sàn Gạch ô vuông văn phòng sang trọng */}
+        <Plane args={[70, 70]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.01, 0]}>
+          <meshStandardMaterial color="#f8fafc" roughness={0.8} />
         </Plane>
+        
+        {/* Những ô vuông gạch (Lưới Grid Mờ xám) */}
+        <gridHelper args={[70, 35, "#cbd5e1", "#e2e8f0"]} position={[0, 0, 0]} />
+
         <ContactShadows position={[0, 0, 0]} opacity={0.3} scale={40} blur={2} far={10} />
 
+        {/* ======================================================
+            TƯỜNG KIẾN TRÚC VÀ CỘT TRỤ
+        ====================================================== */}
+        <ReceptionWall />
+        
+        {/* Hàng Cột trụ giữa công ty */}
+        <ArchitectPillar position={[-6, 0, -3]} />
+        <ArchitectPillar position={[3, 0, -3]} />
+        <ArchitectPillar position={[-6, 0, 7]} />
+        <ArchitectPillar position={[3, 0, 7]} />
+
+        {/* ======================================================
+            MẢNG XANH (GREENERY)
+        ====================================================== */}
+        {/* Chậu cây lớn ở các góc */}
+        <IndoorPlant position={[-14, 0, -14]} />
+        <IndoorPlant position={[14, 0, -14]} />
+        <IndoorPlant position={[-14, 0, 10]} />
+        <IndoorPlant position={[12, 0, 8]} />
+        <IndoorPlant position={[-7, 0, -2]} />
+        <IndoorPlant position={[6, 0, 2]} />
+        <IndoorPlant position={[4, 0, -13]} />
+        <IndoorPlant position={[-5, 0, -5]} />
+
+        {/* Hộp cây Planter tách lối đi */}
+        <PlanterBox position={[-6, 0, -11]} rotation={[0, 0, 0]} />
+        <PlanterBox position={[2, 0, -11]} rotation={[0, 0, 0]} />
+        <PlanterBox position={[-2, 0, -2]} rotation={[0, Math.PI/2, 0]} />
+        <PlanterBox position={[-2, 0, 2]} rotation={[0, Math.PI/2, 0]} />
+
+        {/* =====================================================
+            6 KHỐI PHÒNG KÍNH & 52 NHÂN SỰ
+        ===================================================== */}
+        
         {/* 1. Ban Giám Đốc (4 Người) */}
         <DepartmentRoom 
           startX={-3} startZ={-15} count={4} layoutCols={4} 
@@ -245,7 +355,7 @@ export default function Office3D({ activeAgent }: Office3DProps) {
 
         {/* 5. Khối QA & Security (8 Người) */}
         <DepartmentRoom 
-          startX={0} startZ={2} count={8} layoutCols={4} 
+          startX={2} startZ={2} count={8} layoutCols={4} 
           departmentName="QA & Security" rolePrefix="Pentester/QA" color="#f59e0b" activeId="qa" activeAgent={activeAgent} 
         />
 
