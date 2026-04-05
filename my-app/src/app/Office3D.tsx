@@ -93,7 +93,14 @@ function AgentCharacterGLTF({ position, name, role, isWorking, avatar }: any) {
 
   return (
     <group position={position}>
-      <primitive object={clone} castShadow scale={0.3} position={[0, -0.05, 0]} rotation={[0, Math.PI, 0]} />
+      {/* Cọc xương sống để debug (nếu Robot tàng hình thì cọc này sẽ hiện ra) */}
+      <mesh position={[0, 0.5, 0]}>
+        <boxGeometry args={[0.2, 1, 0.2]} />
+        <meshStandardMaterial color="red" />
+      </mesh>
+      
+      {/* Robot 3D với Scale mặc định chuẩn (1.2) */}
+      <primitive object={clone} castShadow scale={1.2} position={[0, 0, 0]} rotation={[0, Math.PI, 0]} />
       <Html position={[0, 1.8, 0]} center zIndexRange={[100, 0]}>
         <div className={`flex flex-col items-center transition-all duration-300 ${isWorking ? 'animate-bounce' : ''}`}>
            <div className={`relative rounded-full p-0.5 ${isWorking ? 'bg-green-400 shadow-[0_0_20px_rgba(74,222,128,0.7)]' : 'bg-gray-300'}`}>
