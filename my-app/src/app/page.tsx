@@ -5,9 +5,18 @@ import io from "socket.io-client";
 
 // Nạp không gian 3D
 const Office3D = dynamic(() => import("./Office3D"), { ssr: false });
+const VirtualAssistant3D = dynamic(() => import("@/components/VirtualAssistant3D"), { ssr: false });
+
 // Dùng URL Render thực tế
 const BACKEND_URL = "https://cty-ai-agent.onrender.com"; 
 const socket = io(BACKEND_URL);
+
+// Danh sách Trợ lý Ảo
+const assistants = [
+  { id: 'anna', name: 'Anna', role: 'Thư ký AI', color: '#ec4899', avatar: '/anna.png' },
+  { id: 'max', name: 'Max', role: 'Phân tích viên', color: '#3b82f6', avatar: '/max.png' },
+  { id: 'sophia', name: 'Sophia', role: 'Cố vấn Trưởng', color: '#f59e0b', avatar: '/sophia.png' }
+];
 
 export default function VirtualCompanyPortal() {
   // Quản lý Màn hình đang hiển thị ('home' | '3d-office' | 'reports')
@@ -17,6 +26,8 @@ export default function VirtualCompanyPortal() {
   const [greeting, setGreeting] = useState("");
   const [chatHistory, setChatHistory] = useState<{sender: string, text: string}[]>([]);
   const [userInput, setUserInput] = useState("");
+  const [currentAssistant, setCurrentAssistant] = useState(assistants[0]);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   
   // Active Agent dùng cho môi trường 3D thay vì boolean ẩn hiện chung chung
   const [activeAgent, setActiveAgent] = useState<string | null>(null);
@@ -41,6 +52,10 @@ export default function VirtualCompanyPortal() {
     // Lắng nghe log từ backend để Trợ lý cập nhật công việc trực tiếp
     socket.on("ai_log", (msg: { data: string }) => {
       setChatHistory(prev => [...prev, { sender: "assistant", text: "📢 Báo cáo: " + msg.data }]);
+      
+      // Cho Trợ lý vẫy tay nói chuyện
+      setIsSpeaking(true);
+      setTimeout(() => setIsSpeaking(false), 2000);
       
       // Đồng bộ Agent trong phòng 3D và Cập nhật Tiến độ Báo cáo
       const logText = msg.data.toLowerCase();
@@ -83,7 +98,10 @@ export default function VirtualCompanyPortal() {
     // Logic Trợ lý phản hồi thông minh
     const inputLower = userInput.toLowerCase();
     
+    setIsSpeaking(true);
+    
     setTimeout(() => {
+      setIsSpeaking(false);
       if (inputLower.includes("tiến độ") || inputLower.includes("báo cáo")) {
         setActiveView("reports");
         setChatHistory(prev => [...prev, { sender: "assistant", text: "Dạ, em đã mở bảng báo cáo tiến độ dự án trên màn hình chính cho Sếp xem rồi ạ." }]);
@@ -103,7 +121,7 @@ export default function VirtualCompanyPortal() {
         setActiveAgent("1"); // Khởi động CEO đầu tiên
         setChatHistory(prev => [...prev, { sender: "assistant", text: "Đã rõ thưa Sếp! Dự án đang được triển khai. Sếp hãy sang ô Báo Cáo để xem tiến độ thực tế nhé." }]);
       }
-    }, 800);
+    }, 1500);
 
     setUserInput("");
   };
@@ -129,9 +147,9 @@ export default function VirtualCompanyPortal() {
           {/* Màn 1: Giới thiệu */}
           {activeView === "home" && (
             <div className="p-10 flex flex-col items-center justify-center min-h-full">
-              <h2 className="text-4xl font-bold text-gray-800 mb-4">Chào mừng đến với Tương lai của AI</h2>
+              <h2 className="text-4xl font-bold text-gray-800 mb-4">{greeting} Sếp!</h2>
               <p className="text-lg text-gray-600 max-w-2xl text-center">
-                Chúng tôi tự động hóa hoàn toàn quy trình phát triển phần mềm, từ phân tích nghiệp vụ, lập trình, kiểm định đến hạch toán chi phí.
+                Chào mừng trở lại Tòa nhà Điều hành AI. Chúng tôi tự động hóa hoàn toàn quy trình phát triển phần mềm, từ phân tích nghiệp vụ, lập trình, kiểm định đến hạch toán chi phí.
               </p>
             </div>
           )}
@@ -154,7 +172,7 @@ export default function VirtualCompanyPortal() {
                 <div className="text-center mt-20 text-gray-400">
                   <div className="text-6xl mb-4">📭</div>
                   <p className="text-lg">Hiện tại chưa có dự án nào được yêu cầu thi công.</p>
-                  <p>Vui lòng yêu cầu Thư ký Anna qua ô chat để bắt đầu nhé Sếp!</p>
+                  <p>Vui lòng yêu cầu Thư ký {currentAssistant.name} qua ô chat để bắt đầu nhé Sếp!</p>
                 </div>
               ) : (
                 <div className="bg-white p-6 rounded shadow-lg border-l-4 border-pink-500">
@@ -187,14 +205,33 @@ export default function VirtualCompanyPortal() {
       {/* KHU VỰC PHẢI: Trợ lý Ảo (Virtual Assistant) */}
       <div className="w-96 bg-white border-l border-gray-200 shadow-2xl flex flex-col z-20">
         
-        {/* Khung hiển thị Nhân vật Cô gái (Placeholder) */}
-        <div className="h-64 bg-gradient-to-b from-blue-100 to-white flex flex-col items-center justify-center border-b border-gray-200 relative">
-           {/* Tạm thời dùng Emoji làm Avatar. Sau này chèn file 3D cô gái vào đây */}
-           <div className="text-8xl animate-bounce">👩💼</div>
-           <div className="mt-4 font-bold text-blue-800 text-lg">Anna - Thư ký AI</div>
-           <div className="absolute bottom-2 right-2 flex items-center gap-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-xs font-bold text-gray-500">Đang túc trực...</span>
+        {/* Khung hiển thị Nhân vật Cô gái (3D Assistant Model) */}
+        <div className="h-64 bg-gradient-to-b from-blue-100 to-blue-50 relative overflow-hidden flex flex-col justify-end items-center border-b border-gray-200">
+           
+           {/* Khu vực Chọn Trợ lý (Thay thế ảnh UI) */}
+           <div className="absolute top-3 left-0 w-full flex justify-center gap-3 z-10 px-2">
+              {assistants.map(a => (
+                <img 
+                  key={a.id} 
+                  src={a.avatar} 
+                  onClick={() => setCurrentAssistant(a)} 
+                  className={`w-14 h-14 rounded-full border-2 object-cover cursor-pointer transition-all duration-300 ${currentAssistant.id === a.id ? 'border-blue-600 scale-110 shadow-lg ring-2 ring-blue-300' : 'border-gray-300 opacity-60 hover:opacity-100'}`} 
+                  alt={a.name}
+                  title={`Cử trợ lý ${a.name}`}
+                />
+              ))}
+           </div>
+
+           {/* Môi trường 3D chứa mô hình trợ lý nhấp nháy cử chỉ */}
+           <VirtualAssistant3D isSpeaking={isSpeaking} color={currentAssistant.color} />
+
+           {/* Bảng tên */}
+           <div className="absolute bottom-3 z-10 bg-white/90 px-5 py-1.5 rounded-full shadow-md text-center backdrop-blur-sm pointer-events-none">
+             <div className="font-bold text-blue-900">{currentAssistant.name} - {currentAssistant.role}</div>
+             <div className="flex items-center gap-2 justify-center mt-0.5">
+                <div className={`w-2.5 h-2.5 ${isSpeaking ? 'bg-orange-500 animate-pulse' : 'bg-green-500'} rounded-full`}></div>
+                <span className="text-[11px] font-bold text-gray-500 uppercase">{isSpeaking ? 'Đang Phản hồi...' : 'Trực tuyến'}</span>
+             </div>
            </div>
         </div>
 
@@ -202,7 +239,7 @@ export default function VirtualCompanyPortal() {
         <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-3 bg-gray-50">
           {chatHistory.map((chat, idx) => (
             <div key={idx} className={`flex ${chat.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`p-3 rounded-xl max-w-[80%] shadow-sm ${chat.sender === 'user' ? 'bg-blue-600 text-white rounded-br-none' : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none'}`}>
+              <div className={`p-3 rounded-xl max-w-[85%] shadow-sm text-sm ${chat.sender === 'user' ? 'bg-blue-600 text-white rounded-br-none' : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none'}`}>
                 {chat.text}
               </div>
             </div>
@@ -211,11 +248,11 @@ export default function VirtualCompanyPortal() {
 
         {/* Ô nhập lệnh */}
         <div className="p-4 bg-white border-t border-gray-200">
-          <div className="flex bg-gray-100 rounded-full border border-gray-300 overflow-hidden focus-within:border-blue-500 focus-within:ring-2 ring-blue-200">
+          <div className="flex bg-gray-50 rounded-xl border border-gray-300 overflow-hidden focus-within:border-blue-500 focus-within:ring-2 ring-blue-100">
             <input
               type="text"
-              className="flex-1 bg-transparent p-3 outline-none"
-              placeholder="Hỏi tiến độ, giao việc..."
+              className="flex-1 bg-transparent p-3 outline-none text-sm"
+              placeholder={`Giao việc cho ${currentAssistant.name}...`}
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
