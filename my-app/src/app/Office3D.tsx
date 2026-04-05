@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Html, Box, Plane, Environment, ContactShadows, useGLTF, useAnimations } from "@react-three/drei";
+import { OrbitControls, Html, Box, Plane, Environment, ContactShadows, useGLTF, useAnimations, Clone } from "@react-three/drei";
 import * as THREE from "three";
 
 // =========================================================
@@ -62,7 +62,49 @@ function OfficeChair({ position, rotation = 0 }: any) {
 }
 
 // =======================================================================================
-// 👉 ĐÂY LÀ NHÂN SỰ DÙNG HÌNH 2D HOLOGRAM (Dùng Tạm Khi Sếp Chưa Tải Xong File 3D)
+// 👉 NHÂN SỰ MODEL 3D CHUẨN (ĐÃ TẢI FILE `.glb`)
+// =======================================================================================
+function AgentCharacterGLTF({ position, name, role, isWorking, avatar }: any) {
+  // Nạp file 3D từ thư mục public/models/
+  const { scene, animations } = useGLTF('/models/worker.glb');
+  const { actions } = useAnimations(animations, scene);
+
+  // Điều khiển hiệu ứng nhảy mú/làm việc dựa vào isWorking
+  useEffect(() => {
+    // RobotExpressive animations: 'Dance', 'Death', 'Idle', 'Jump', 'No', 'Punch', 'Running', 'Sitting', 'Standing', 'ThumbsUp', 'Walking', 'WalkJump', 'Yes'
+    if (actions) {
+      if (isWorking) {
+        if (actions['Idle']) actions['Idle'].stop();
+        if (actions['ThumbsUp']) actions['ThumbsUp'].play();
+        else if (actions['Dance']) actions['Dance'].play();
+      } else {
+        if (actions['ThumbsUp']) actions['ThumbsUp'].stop();
+        if (actions['Dance']) actions['Dance'].stop();
+        if (actions['Idle']) actions['Idle'].play();
+      }
+    }
+  }, [isWorking, actions]);
+
+  return (
+    <group position={position}>
+      <Clone object={scene} castShadow scale={0.3} position={[0, 0, 0]} rotation={[0, Math.PI, 0]} />
+      <Html position={[0, 1.8, 0]} center zIndexRange={[100, 0]}>
+        <div className={`flex flex-col items-center transition-all duration-300 ${isWorking ? 'animate-bounce' : ''}`}>
+           <div className={`relative rounded-full p-0.5 ${isWorking ? 'bg-green-400 shadow-[0_0_20px_rgba(74,222,128,0.7)]' : 'bg-gray-300'}`}>
+             <img src={avatar} className="w-12 h-12 rounded-full border-2 border-white object-cover" alt={name} />
+           </div>
+           <div className="mt-2 bg-white/95 backdrop-blur shadow text-gray-800 px-3 py-1 rounded-full text-[10px] font-bold border border-gray-200 flex flex-col items-center whitespace-nowrap">
+             <span className="text-gray-900">{name}</span>
+             <span className="text-[8px] text-blue-600 font-extrabold uppercase mt-0.5 tracking-widest">{role}</span>
+           </div>
+        </div>
+      </Html>
+    </group>
+  );
+}
+
+// =======================================================================================
+// 👉 ĐÂY LÀ NHÂN SỰ DÙNG HÌNH 2D HOLOGRAM (Dùng Tạm Khi Chưa Có File 3D)
 // =======================================================================================
 function AgentCharacter({ position, color, name, role, isWorking, avatar }: any) {
   const projectorRef = useRef<THREE.Mesh>(null);
@@ -101,39 +143,7 @@ function AgentCharacter({ position, color, name, role, isWorking, avatar }: any)
   );
 }
 
-// =======================================================================================
-// 👉 ĐÂY LÀ NHÂN SỰ MODEL 3D CHUẨN - BỎ COMMENT KHI ĐÃ CÓ FILE `.glb`
-// Chú ý copy file vào đường dẫn public/models/worker.glb nhé Sếp!
-// =======================================================================================
-/*
-function AgentCharacterGLTF({ position, name, role, isWorking }: any) {
-  // Nạp file 3D từ thư mục public/models/
-  const { scene, animations } = useGLTF('/models/worker.glb');
-  const { actions } = useAnimations(animations, scene);
-
-  // Điều khiển hiệu ứng nhảy mú/làm việc dựa vào isWorking
-  useEffect(() => {
-    // Giả sử trong file 3D Sếp tải có thư mục animation tên là "Action" hoặc "Typing"
-    // Nếu có animation, sếp thay tên tương ứng vào đây:
-    const actionName = Object.keys(actions)[0]; // Tự động lấy animation đầu tiên
-    if (actions && actionName) {
-      if (isWorking) actions[actionName].play();
-      else actions[actionName].stop();
-    }
-  }, [isWorking, actions]);
-
-  return (
-    <group position={position}>
-      <primitive object={scene} castShadow />
-      <Html position={[0, 2.5, 0]} center zIndexRange={[100, 0]}>
-        <div className="bg-white/90 shadow px-3 py-1 rounded-full text-[10px] font-bold border border-gray-200">
-           {name}
-        </div>
-      </Html>
-    </group>
-  );
-}
-*/
+// Đã gỡ comment và di chuyển AgentCharacterGLTF lên trên.
 
 // --- Thành phần: KHÔNG GIAN PHÒNG LÀM VIỆC RIÊNG BẰNG KÍNH (Private Office) ---
 function PrivateOfficeRoom({ position, roomName, color, deskRotation = 0, agentProps }: any) {
@@ -171,9 +181,8 @@ function PrivateOfficeRoom({ position, roomName, color, deskRotation = 0, agentP
       <ModernDesk position={[0, 0, -1]} rotation={deskRotation} partitionColor={color} />
       <OfficeChair position={[0, 0, 0]} rotation={deskRotation} />
 
-      {/* Nhân sự nằm chính xác trên ghế */}
-      <AgentCharacter position={[0, 0, 0]} {...agentProps} />
-      {/* Nếu Sếp có GLB, hãy đổi AgentCharacter thành AgentCharacterGLTF ở trên 😊 */}
+      {/* Nhân sự sử dụng mô hình Robot 3D! */}
+      <AgentCharacterGLTF position={[0, 0, 0]} {...agentProps} />
     </group>
   );
 }
