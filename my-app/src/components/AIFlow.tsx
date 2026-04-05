@@ -36,7 +36,7 @@ function AgentCapsule({ position, color, label, isActive }: AgentCapsuleProps) {
     <group position={[position[0], 0, position[2]]}>
       {/* Khối con nhộng */}
       <mesh ref={meshRef} position={[0, position[1], 0]} castShadow>
-        <capsuleGeometry args আমেরিক{[0.5, 1, 4, 16]} />
+        <capsuleGeometry args={[0.5, 1, 4, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
       
