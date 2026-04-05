@@ -103,6 +103,15 @@ export default function Office3D({ activeAgent }: Office3DProps) {
           label="🕵️‍♂️ QA Agent" 
           isActive={activeAgent === "3"} 
         />
+        
+        {/* THÊM PHÒNG KẾ TOÁN MỚI */}
+        <AgentCapsule 
+          id="4" 
+          position={[-3, 1, 2]} 
+          color="#ec4899" 
+          label="💰 Kế toán trưởng" 
+          isActive={activeAgent === "4"} 
+        />
 
         {/* Điều khiển Camera */}
         <OrbitControls makeDefault minPolarAngle={0} maxPolarAngle={Math.PI / 2 - 0.1} />
