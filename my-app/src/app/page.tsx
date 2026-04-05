@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 
 // Components
-import AIFlow from "@/components/AIFlow";
+import Office3D from "./Office3D";
 import CodeEditor from "@/components/CodeEditor";
 import Terminal from "@/components/Terminal";
 
@@ -43,7 +43,7 @@ export default function GodEyeIDE() {
       <div className="w-1/3 border-r border-gray-700 flex flex-col">
         <div className="p-4 bg-gray-800 font-bold border-b border-gray-700">Văn phòng 3D (Three.js)</div>
         <div className="flex-1 bg-gray-900">
-          <AIFlow activeAgent={activeAgent} />
+          <Office3D activeAgent={activeAgent} />
         </div>
       </div>
 

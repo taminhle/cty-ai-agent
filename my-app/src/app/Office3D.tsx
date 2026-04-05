@@ -54,11 +54,11 @@ function AgentCapsule({ position, color, label, isActive }: AgentCapsuleProps) {
   );
 }
 
-interface AIFlowProps {
+interface Office3DProps {
   activeAgent: string | null;
 }
 
-export default function AIFlow({ activeAgent }: AIFlowProps) {
+export default function Office3D({ activeAgent }: Office3DProps) {
   return (
     <div className="flex-1 w-full h-full">
       <Canvas shadows camera={{ position: [0, 4, 8], fov: 45 }}>
