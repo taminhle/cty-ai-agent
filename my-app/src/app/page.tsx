@@ -5,7 +5,6 @@ import io from "socket.io-client";
 
 // Nạp không gian 3D
 const Office3D = dynamic(() => import("./Office3D"), { ssr: false });
-const VirtualAssistant3D = dynamic(() => import("@/components/VirtualAssistant3D"), { ssr: false });
 
 // Dùng URL Render thực tế
 const BACKEND_URL = "https://cty-ai-agent.onrender.com"; 
@@ -133,7 +132,7 @@ export default function VirtualCompanyPortal() {
       <div className="flex-1 flex flex-col relative">
         {/* Menu Điều hướng */}
         <header className="bg-white shadow-md p-4 flex justify-between items-center z-10">
-          <h1 className="text-2xl font-extrabold text-blue-700">TẬP ĐOÀN ANTIGRAVITY</h1>
+          <h1 className="text-2xl font-extrabold text-blue-700 uppercase">Công Ty Tin Học và Sáng Tạo Hoàng Kim</h1>
           <nav className="flex gap-4">
             <button onClick={() => setActiveView("home")} className={`font-bold ${activeView === 'home' ? 'text-blue-600' : 'text-gray-500'}`}>Giới thiệu</button>
             <button onClick={() => setActiveView("3d-office")} className={`font-bold ${activeView === '3d-office' ? 'text-blue-600' : 'text-gray-500'}`}>Văn phòng 3D</button>
@@ -190,7 +189,7 @@ export default function VirtualCompanyPortal() {
                     <ul className="list-disc ml-5 mt-2 text-sm text-gray-700 leading-relaxed">
                       <li>Chi phí hạ tầng tạm tính: {progress > 0 ? "150.000 VNĐ" : "0 VNĐ"}</li>
                       <li>Token AI dự đoán: ~{Math.floor(progress * 50)} tokens</li>
-                      <li>Bộ vi xử lý: Hệ thống AI Antigravity siêu cấp.</li>
+                      <li>Bộ vi xử lý: Hệ thống AI Hoàng Kim siêu cấp.</li>
                       <li>Tình trạng dòng tiền: Ổn định.</li>
                     </ul>
                   </div>
@@ -215,15 +214,21 @@ export default function VirtualCompanyPortal() {
                   key={a.id} 
                   src={a.avatar} 
                   onClick={() => setCurrentAssistant(a)} 
-                  className={`w-14 h-14 rounded-full border-2 object-cover cursor-pointer transition-all duration-300 ${currentAssistant.id === a.id ? 'border-blue-600 scale-110 shadow-lg ring-2 ring-blue-300' : 'border-gray-300 opacity-60 hover:opacity-100'}`} 
+                  className={`w-14 h-14 rounded-full border-2 object-cover cursor-pointer transition-all duration-300 shadow-md ${currentAssistant.id === a.id ? 'border-white scale-110 shadow-xl ring-2 ring-blue-400' : 'border-gray-200 opacity-80 hover:opacity-100'}`} 
                   alt={a.name}
                   title={`Cử trợ lý ${a.name}`}
                 />
               ))}
            </div>
 
-           {/* Môi trường 3D chứa mô hình trợ lý nhấp nháy cử chỉ */}
-           <VirtualAssistant3D isSpeaking={isSpeaking} color={currentAssistant.color} />
+           {/* Ảnh chụp người thật thay thế cho 3D Avatar */}
+           <img 
+             src={currentAssistant.avatar}
+             alt={currentAssistant.name}
+             className="w-full h-full object-cover absolute top-0 left-0 z-0"
+           />
+           {/* Chồng một lớp gradient mỏng để phần chọn trợ lý và chữ bên dưới hiện rõ trên hình */}
+           <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-black/30 z-0"></div>
 
            {/* Bảng tên */}
            <div className="absolute bottom-3 z-10 bg-white/90 px-5 py-1.5 rounded-full shadow-md text-center backdrop-blur-sm pointer-events-none">
