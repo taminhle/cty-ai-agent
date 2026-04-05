@@ -8,7 +8,7 @@ import CodeEditor from "@/components/CodeEditor";
 import Terminal from "@/components/Terminal";
 
 // Kết nối tới Python Server
-const socket = io("http://localhost:5000");
+const socket = io("https://cty-ai-agent.onrender.com");
 
 export default function GodEyeIDE() {
   const [logs, setLogs] = useState<string[]>([]);
