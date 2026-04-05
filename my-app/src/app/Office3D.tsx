@@ -35,19 +35,20 @@ function ArchitectPillar({ position }: any) {
     <group position={position}>
       <mesh position={[0, 3, 0]} castShadow receiveShadow>
         <boxGeometry args={[1, 6, 1]} />
-        <meshStandardMaterial color="#e2e8f0" roughness={0.7} />
+        <meshStandardMaterial color="#020617" roughness={0.2} metalness={0.8} />
       </mesh>
       <mesh position={[0, 0.2, 0]} castShadow>
         <boxGeometry args={[1.2, 0.4, 1.2]} />
-        <meshStandardMaterial color="#94a3b8" />
+        <meshStandardMaterial color="#334155" metalness={0.9} />
       </mesh>
-      <mesh position={[0, 5, 0.6]}>
-        <boxGeometry args={[0.2, 0.8, 0.1]} />
-        <meshBasicMaterial color="#fcd34d" />
+      {/* LED Viền Cột */}
+      <mesh position={[0, 3, 0.51]}>
+        <boxGeometry args={[0.1, 5.8, 0.05]} />
+        <meshBasicMaterial color="#0ea5e9" />
       </mesh>
-      <mesh position={[0, 5, -0.6]}>
-        <boxGeometry args={[0.2, 0.8, 0.1]} />
-        <meshBasicMaterial color="#fcd34d" />
+      <mesh position={[0, 3, -0.51]}>
+        <boxGeometry args={[0.1, 5.8, 0.05]} />
+        <meshBasicMaterial color="#0ea5e9" />
       </mesh>
     </group>
   );
@@ -73,16 +74,22 @@ function PlanterBox({ position, rotation }: any) {
 function ReceptionWall() {
   return (
     <group position={[0, 0, -18]}>
+      {/* Bức tường đen nhám */}
       <mesh position={[0, 4, 0]} receiveShadow>
         <boxGeometry args={[34, 8, 1]} />
-        <meshStandardMaterial color="#0f172a" roughness={0.5} />
+        <meshStandardMaterial color="#000000" roughness={0.8} />
+      </mesh>
+      {/* Khung LED Neon xung quanh */}
+      <mesh position={[0, 4, 0.55]}>
+        <boxGeometry args={[33, 7.5, 0.05]} />
+        <meshBasicMaterial color="#38bdf8" wireframe />
       </mesh>
       <Html position={[0, 6, 0.6]} center zIndexRange={[100, 0]} transform>
          <div className="bg-transparent text-center scale-[2]">
-            <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200 tracking-widest drop-shadow-[0_0_15px_rgba(250,204,21,0.8)]">
+            <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 tracking-widest drop-shadow-[0_0_20px_rgba(34,211,238,0.8)]">
               HOANG KIM CORPORATION
             </h1>
-            <p className="text-yellow-100 text-sm tracking-[0.5em] mt-2 opacity-80 uppercase font-mono drop-shadow-[0_0_5px_rgba(250,204,21,0.5)]">
+            <p className="text-cyan-100 text-sm tracking-[0.5em] mt-2 opacity-80 uppercase font-mono drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
               The AI Tech Giant
             </p>
          </div>
@@ -98,17 +105,18 @@ function ModernDesk({ position, rotation, partitionColor }: any) {
   return (
     <group position={position} rotation={rotation}>
       <Box args={[1.6, 0.05, 0.8]} position={[0, 0.75, 0]} castShadow receiveShadow>
-        <meshStandardMaterial color="#f8fafc" roughness={0.1} />
+        <meshStandardMaterial color="#0f172a" roughness={0.2} metalness={0.8} />
       </Box>
-      <Box args={[0.05, 0.75, 0.6]} position={[-0.7, 0.375, 0]} castShadow><meshStandardMaterial color="#334155" /></Box>
-      <Box args={[0.05, 0.75, 0.6]} position={[0.7, 0.375, 0]} castShadow><meshStandardMaterial color="#334155" /></Box>
+      <Box args={[0.05, 0.75, 0.6]} position={[-0.7, 0.375, 0]} castShadow><meshStandardMaterial color="#1e293b" /></Box>
+      <Box args={[0.05, 0.75, 0.6]} position={[0.7, 0.375, 0]} castShadow><meshStandardMaterial color="#1e293b" /></Box>
       <Box args={[1.5, 0.4, 0.02]} position={[0, 0.95, -0.38]}>
-        <meshStandardMaterial color={partitionColor} transparent opacity={0.8} />
+        <meshPhysicalMaterial color={partitionColor} transmission={0.9} transparent opacity={0.4} emissive={partitionColor} emissiveIntensity={0.2} />
       </Box>
+      {/* Màn hình máy tính phát sáng */}
       <Box args={[0.6, 0.35, 0.02]} position={[0, 0.95, -0.1]} rotation={[-0.1, 0, 0]} castShadow>
-        <meshStandardMaterial color="#0f172a" />
+        <meshStandardMaterial color="#020617" emissive="#0284c7" emissiveIntensity={0.5} />
       </Box>
-      <Box args={[0.1, 0.1, 0.1]} position={[0, 0.8, -0.15]}><meshStandardMaterial color="#94a3b8" /></Box>
+      <Box args={[0.1, 0.1, 0.1]} position={[0, 0.8, -0.15]}><meshStandardMaterial color="#334155" /></Box>
     </group>
   );
 }
@@ -218,18 +226,18 @@ function DepartmentRoom({ startX, startZ, count, layoutCols, departmentName, rol
       <Plane args={[roomWidth, roomDepth]} position={[centerX, 0.01, centerZ]} rotation={[-Math.PI/2, 0, 0]}>
         <meshStandardMaterial color={color} transparent opacity={0.05} />
       </Plane>
-      
-      <Box args={[roomWidth, 1.5, 0.1]} position={[centerX, 0.75, centerZ + roomDepth/2]}>
-        <meshPhysicalMaterial transmission={0.9} roughness={0.1} transparent opacity={0.2} color={color} />
+      {/* Vách kính bao quanh (4 vách) phát sáng neon */}
+      <Box args={[roomWidth, 1.5, 0.05]} position={[centerX, 0.75, centerZ + roomDepth/2]}>
+        <meshPhysicalMaterial transmission={0.9} roughness={0.1} transparent opacity={0.2} color={color} emissive={color} emissiveIntensity={0.1} />
       </Box>
-      <Box args={[roomWidth, 1.5, 0.1]} position={[centerX, 0.75, centerZ - roomDepth/2]}>
-        <meshPhysicalMaterial transmission={0.9} roughness={0.1} transparent opacity={0.2} color={color} />
+      <Box args={[roomWidth, 1.5, 0.05]} position={[centerX, 0.75, centerZ - roomDepth/2]}>
+        <meshPhysicalMaterial transmission={0.9} roughness={0.1} transparent opacity={0.2} color={color} emissive={color} emissiveIntensity={0.1} />
       </Box>
-      <Box args={[0.1, 1.5, roomDepth]} position={[centerX - roomWidth/2, 0.75, centerZ]}>
-        <meshPhysicalMaterial transmission={0.9} roughness={0.1} transparent opacity={0.2} color={color} />
+      <Box args={[0.05, 1.5, roomDepth]} position={[centerX - roomWidth/2, 0.75, centerZ]}>
+        <meshPhysicalMaterial transmission={0.9} roughness={0.1} transparent opacity={0.2} color={color} emissive={color} emissiveIntensity={0.1} />
       </Box>
-      <Box args={[0.1, 1.5, roomDepth]} position={[centerX + roomWidth/2, 0.75, centerZ]}>
-        <meshPhysicalMaterial transmission={0.9} roughness={0.1} transparent opacity={0.2} color={color} />
+      <Box args={[0.05, 1.5, roomDepth]} position={[centerX + roomWidth/2, 0.75, centerZ]}>
+        <meshPhysicalMaterial transmission={0.9} roughness={0.1} transparent opacity={0.2} color={color} emissive={color} emissiveIntensity={0.1} />
       </Box>
 
       <Html position={[centerX, 3, centerZ]} center zIndexRange={[100, 0]}>
@@ -258,18 +266,19 @@ interface Office3DProps {
 export default function Office3D({ activeAgent }: Office3DProps) {
   return (
     <Canvas shadows camera={{ position: [0, 20, 25], fov: 40 }}>
-      {/* Không gian nội thất có màu sơn tường ấm nhẹ */}
-      <color attach="background" args={["#e2e8f0"]} /> 
-      <fog attach="fog" args={["#e2e8f0", 30, 80]} />
+      {/* Không gian nội thất có màu nền Sci-Fi tối */}
+      <color attach="background" args={["#020617"]} /> 
+      <fog attach="fog" args={["#020617", 20, 70]} />
 
       <Suspense fallback={<Html center><div className="px-6 py-3 bg-white rounded-xl shadow-2xl font-bold text-blue-600 border border-blue-100">Loading Mega Corporation (52 Agents)...</div></Html>}>
         
-        <ambientLight intensity={0.7} />
-        <hemisphereLight intensity={0.5} color="#ffffff" groundColor="#cbd5e1" />
+        <ambientLight intensity={0.4} />
+        <hemisphereLight intensity={0.5} color="#38bdf8" groundColor="#0f172a" />
         <directionalLight 
           position={[20, 30, -10]} 
           castShadow 
-          intensity={1.2}
+          intensity={0.8}
+          color="#e0f2fe"
           shadow-mapSize={[2048, 2048]}
           shadow-camera-left={-20}
           shadow-camera-right={20}
@@ -285,13 +294,13 @@ export default function Office3D({ activeAgent }: Office3DProps) {
           target={[0, 0, 0]}
         />
 
-        {/* Lát sàn Gạch ô vuông văn phòng sang trọng */}
+        {/* Lát sàn Gạch tối màu phản quang */}
         <Plane args={[70, 70]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.01, 0]}>
-          <meshStandardMaterial color="#f8fafc" roughness={0.8} />
+          <meshStandardMaterial color="#020617" roughness={0.1} metalness={0.9} />
         </Plane>
         
-        {/* Những ô vuông gạch (Lưới Grid Mờ xám) */}
-        <gridHelper args={[70, 35, "#cbd5e1", "#e2e8f0"]} position={[0, 0, 0]} />
+        {/* Lưới Grid Cyberpunk */}
+        <gridHelper args={[70, 35, "#0ea5e9", "#1e293b"]} position={[0, 0, 0]} />
 
         <ContactShadows position={[0, 0, 0]} opacity={0.3} scale={40} blur={2} far={10} />
 
