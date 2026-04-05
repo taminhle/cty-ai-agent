@@ -58,27 +58,41 @@ export default function VirtualCompanyPortal() {
       
       // Đồng bộ Agent trong phòng 3D và Cập nhật Tiến độ Báo cáo
       const logText = msg.data.toLowerCase();
-      if (logText.includes("ceo") || logText.includes("kế hoạch")) {
-        setActiveAgent("1");
-        setProjectStatus("Kiến trúc sư CEO đang lên bản vẽ");
+      
+      // Map 6 Phòng Ban Siêu Tập Đoàn 52 Người
+      if (logText.includes("ceo") || logText.includes("cấp cao") || logText.includes("giám đốc")) {
+        setActiveAgent("ceo");
+        setProjectStatus("Ban Giám Đốc đang chốt chiến lược dự án");
+        setProgress(10);
+      }
+      else if (logText.includes("pm") || logText.includes("sản phẩm") || logText.includes("thiết kế") || logText.includes("ui/ux")) {
+        setActiveAgent("pm");
+        setProjectStatus("Khối Product đang Thiết kế & Lên tài liệu");
         setProgress(30);
       }
-      else if (logText.includes("lập trình") || logText.includes("dev") || logText.includes("viết code")) {
-        setActiveAgent("2");
-        setProjectStatus("Dev đang Code tính năng");
-        setProgress(60);
+      else if (logText.includes("frontend") || logText.includes("giao diện")) {
+        setActiveAgent("frontend");
+        setProjectStatus("Khối Frontend (12 Dev) đang Code React/Web");
+        setProgress(50);
       }
-      else if (logText.includes("qa") || logText.includes("kiểm tra") || logText.includes("duyệt")) {
-        setActiveAgent("3");
-        setProjectStatus("QA đang Kiểm định chất lượng");
-        setProgress(90);
+      else if (logText.includes("backend") || logText.includes("database") || logText.includes("server")) {
+        setActiveAgent("backend");
+        setProjectStatus("Khối Backend (15 Dev) đang đẩy API & Database");
+        setProgress(70);
       }
-      else if (logText.includes("kế toán") || logText.includes("tài chính") || logText.includes("tiền")) {
-        setActiveAgent("4");
+      else if (logText.includes("qa") || logText.includes("kiểm định") || logText.includes("lỗi") || logText.includes("bảo mật")) {
+        setActiveAgent("qa");
+        setProjectStatus("Khối QA (8 Tester) đang chạy Stress Test & Soi bug");
+        setProgress(85);
       }
-      else if (logText.includes("hoàn thành")) {
+      else if (logText.includes("kế toán") || logText.includes("chi phí") || logText.includes("anna")) {
+        setActiveAgent("accountant");
+        setProjectStatus("Kế toán tính doanh thu & xuất Excel");
+        setProgress(95);
+      }
+      else if (logText.includes("hoàn thành") || logText.includes("thành công toàn diện")) {
         setActiveAgent(null);
-        setProjectStatus("Đã Tự động hoá Hoàn tất 100%");
+        setProjectStatus("Dự án Đóng gói Hoàn Tất 100%");
         setProgress(100);
       }
     });
@@ -157,8 +171,16 @@ export default function VirtualCompanyPortal() {
           {activeView === "3d-office" && (
             <div className="w-full h-full bg-gray-900 relative">
               <Office3D activeAgent={activeAgent} />
-              <div className="absolute top-4 left-4 bg-black/50 text-white p-2 rounded text-sm pointer-events-none">
-                Đang trực tuyến: CEO, Lập trình viên, Kiểm định, Kế toán
+              <div className="absolute top-4 left-4 bg-black/70 backdrop-blur text-white p-3 rounded-lg text-sm pointer-events-none shadow-2xl border border-gray-700">
+                <p className="font-bold text-yellow-400 mb-1">Siêu Tập Đoàn 52 Nhân Sự (Mega Corp)</p>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-gray-300">
+                  <span>🤵 C-Level: 4 VIPs</span>
+                  <span>🎨 Product/UX: 8</span>
+                  <span>⚛️ Frontend: 12</span>
+                  <span>⚙️ Backend/Ops: 15</span>
+                  <span>🛡️ Security/QA: 8</span>
+                  <span>💼 Finance/HR: 5</span>
+                </div>
               </div>
             </div>
           )}
