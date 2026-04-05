@@ -1,8 +1,7 @@
 "use client";
 import React, { useRef, useEffect, Suspense, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Html, Box, Plane, Environment, ContactShadows, useGLTF, useAnimations, Clone } from "@react-three/drei";
-import { SkeletonUtils } from "three-stdlib";
+import { OrbitControls, Html, Box, Plane, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 
 // =========================================================
@@ -62,59 +61,7 @@ function OfficeChair({ position, rotation = 0 }: any) {
   );
 }
 
-// =======================================================================================
-// 👉 NHÂN SỰ MODEL 3D CHUẨN (ĐÃ TẢI FILE `.glb` CÓ XƯƠNG - SKINNED MESH)
-// =======================================================================================
-function AgentCharacterGLTF({ position, name, role, isWorking, avatar }: any) {
-  // Nạp 1 bản 3D duy nhất vào bộ nhớ cache
-  const { scene, animations } = useGLTF('/models/worker.glb');
-  
-  // NHÂN BẢN AN TOÀN (Clone) CÓ GIỮ NGUYÊN CẤU TRÚC XƯƠNG BẰNG SkeletonUtils
-  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
-
-  // Gắn Hoạt ảnh vào chính bản sao (clone) này!
-  const { actions } = useAnimations(animations, clone);
-
-  // Điều khiển các Hoạt ảnh tương ứng của Robot
-  useEffect(() => {
-    // RobotExpressive animations: 'Dance', 'Death', 'Idle', 'Jump', 'No', 'Punch', 'Running', 'Sitting', 'Standing', 'ThumbsUp', 'Walking', 'WalkJump', 'Yes'
-    if (actions) {
-      if (isWorking) {
-        if (actions['Idle']) actions['Idle'].stop();
-        if (actions['ThumbsUp']) actions['ThumbsUp'].play();
-        else if (actions['Dance']) actions['Dance'].play();
-      } else {
-        if (actions['ThumbsUp']) actions['ThumbsUp'].stop();
-        if (actions['Dance']) actions['Dance'].stop();
-        if (actions['Idle']) actions['Idle'].play();
-      }
-    }
-  }, [isWorking, actions]);
-
-  return (
-    <group position={position}>
-      {/* Cọc xương sống để debug (nếu Robot tàng hình thì cọc này sẽ hiện ra) */}
-      <mesh position={[0, 0.5, 0]}>
-        <boxGeometry args={[0.2, 1, 0.2]} />
-        <meshStandardMaterial color="red" />
-      </mesh>
-      
-      {/* Robot 3D với Scale mặc định chuẩn (1.2) */}
-      <primitive object={clone} castShadow scale={1.2} position={[0, 0, 0]} rotation={[0, Math.PI, 0]} />
-      <Html position={[0, 1.8, 0]} center zIndexRange={[100, 0]}>
-        <div className={`flex flex-col items-center transition-all duration-300 ${isWorking ? 'animate-bounce' : ''}`}>
-           <div className={`relative rounded-full p-0.5 ${isWorking ? 'bg-green-400 shadow-[0_0_20px_rgba(74,222,128,0.7)]' : 'bg-gray-300'}`}>
-             <img src={avatar} className="w-12 h-12 rounded-full border-2 border-white object-cover" alt={name} />
-           </div>
-           <div className="mt-2 bg-white/95 backdrop-blur shadow text-gray-800 px-3 py-1 rounded-full text-[10px] font-bold border border-gray-200 flex flex-col items-center whitespace-nowrap">
-             <span className="text-gray-900">{name}</span>
-             <span className="text-[8px] text-blue-600 font-extrabold uppercase mt-0.5 tracking-widest">{role}</span>
-           </div>
-        </div>
-      </Html>
-    </group>
-  );
-}
+// Chú ý: Đã xoá AgentCharacterGLTF vì Model có xương gây lỗi Crash.
 
 // =======================================================================================
 // 👉 ĐÂY LÀ NHÂN SỰ DÙNG HÌNH 2D HOLOGRAM (Dùng Tạm Khi Chưa Có File 3D)
@@ -194,8 +141,8 @@ function PrivateOfficeRoom({ position, roomName, color, deskRotation = 0, agentP
       <ModernDesk position={[0, 0, -1]} rotation={deskRotation} partitionColor={color} />
       <OfficeChair position={[0, 0, 0]} rotation={deskRotation} />
 
-      {/* Bật Dàn Robot 3D với SkinnedMesh! */}
-      <AgentCharacterGLTF position={[0, 0, 0]} {...agentProps} />
+      {/* Sử dụng Hologram an toàn tuyệt đối 100% */}
+      <AgentCharacter position={[0, 0, 0]} {...agentProps} />
     </group>
   );
 }
@@ -208,10 +155,10 @@ export default function Office3D({ activeAgent }: Office3DProps) {
   return (
     <Canvas shadows camera={{ position: [0, 10, 18], fov: 45 }}>
       <color attach="background" args={["#f1f5f9"]} /> 
-      <Suspense fallback={<Html center><div className="px-4 py-2 bg-white rounded-lg shadow font-bold text-blue-600">Loading 3D Models...</div></Html>}>
-        {/* Ánh sáng và môi trường */}
-        <Environment preset="apartment" />
-      <ambientLight intensity={0.5} />
+      <Suspense fallback={<Html center><div className="px-4 py-2 bg-white rounded-lg shadow font-bold text-blue-600">Loading 3D Workspace...</div></Html>}>
+        {/* Ánh sáng và môi trường (Không dùng Environment preset tải từ mạng mộc nữa để tránh lỗi mạng) */}
+        <ambientLight intensity={0.6} />
+        <hemisphereLight intensity={0.5} color="#ffffff" groundColor="#94a3b8" />
       <directionalLight 
         position={[10, 15, -10]} 
         castShadow 
