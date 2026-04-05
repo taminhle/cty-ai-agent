@@ -43,96 +43,62 @@ function Desk({ position, rotation = 0 }: { position: [number, number, number], 
 function RoomLabel({ name, position }: { name: string, position: [number, number, number] }) {
   return (
     <Html position={position} center zIndexRange={[100, 0]}>
-      <div className="bg-blue-900/80 backdrop-blur-md text-white border border-blue-400 px-4 py-2 rounded-lg text-sm font-black uppercase tracking-widest select-none shadow-2xl whitespace-nowrap">
+      <div className="bg-white/80 backdrop-blur-md text-blue-800 border border-blue-200 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider select-none shadow-sm whitespace-nowrap">
         {name}
       </div>
     </Html>
   );
 }
 
-// --- Nhân viên AI (Thiết kế Người mặc Vest Low-Poly) ---
-function AgentCharacter({ position, color, name, role, isWorking }: any) {
-  const groupRef = useRef<THREE.Group>(null);
-  const leftArmRef = useRef<THREE.Mesh>(null);
-  const rightArmRef = useRef<THREE.Mesh>(null);
-  const headRef = useRef<THREE.Mesh>(null);
+// --- Nhân viên AI (Hologram Người Thật) ---
+function AgentCharacter({ position, color, name, role, isWorking, avatar }: any) {
+  const projectorRef = useRef<THREE.Mesh>(null);
   
   useFrame((state) => {
-    if (!groupRef.current || !leftArmRef.current || !rightArmRef.current || !headRef.current) return;
-    
-    if (isWorking) {
-      // Gõ phím / tương tác nhịp nhàng
-      groupRef.current.position.y = position[1] + Math.abs(Math.sin(state.clock.elapsedTime * 8)) * 0.1;
-      leftArmRef.current.rotation.x = -Math.abs(Math.sin(state.clock.elapsedTime * 15)) * 0.3;
-      rightArmRef.current.rotation.x = -Math.abs(Math.cos(state.clock.elapsedTime * 15)) * 0.3;
-      headRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 5) * 0.1 + 0.1; // Cúi xuống gõ
-    } else {
-      // Trạng thái nghỉ
-      groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, position[1], 0.1);
-      leftArmRef.current.rotation.x = THREE.MathUtils.lerp(leftArmRef.current.rotation.x, 0, 0.1);
-      rightArmRef.current.rotation.x = THREE.MathUtils.lerp(rightArmRef.current.rotation.x, 0, 0.1);
-      headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, 0, 0.1);
+    if (projectorRef.current) {
+      if (isWorking) {
+        // Đĩa chiếu phát sáng nhấp nháy khi làm việc
+        const material = projectorRef.current.material as THREE.MeshStandardMaterial;
+        material.emissiveIntensity = 0.5 + Math.abs(Math.sin(state.clock.elapsedTime * 5)) * 0.5;
+      } else {
+        const material = projectorRef.current.material as THREE.MeshStandardMaterial;
+        material.emissiveIntensity = THREE.MathUtils.lerp(material.emissiveIntensity, 0, 0.1);
+      }
     }
   });
 
-  // Quy định màu sắc (nếu là nữ thì cà vạt đổi màu theo role)
-  const suitColor = "#1a1a1a"; // Vest đen sang trọng như ảnh thật
-  const shirtColor = "#ffffff";
-  const tieColor = color === "#ec4899" ? "#ec4899" : "#111111"; // Anna có cà vạt hồng
-
   return (
-    <group position={position} ref={groupRef}>
-      {/* Đầu (Head) */}
-      <Sphere ref={headRef} args={[0.25, 32, 32]} position={[0, 1.6, 0]} castShadow>
-        <meshStandardMaterial color="#fcd5ce" roughness={0.4} /> {/* Màu da */}
-      </Sphere>
+    <group position={position}>
+      {/* Đĩa chiếu Hologram dưới mặt sàn */}
+      <mesh ref={projectorRef} position={[0, 0.05, 0]} receiveShadow>
+        <cylinderGeometry args={[0.5, 0.5, 0.1, 32]} />
+        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0} roughness={0.2} metalness={0.8} />
+      </mesh>
       
-      {/* Tóc (Hair) */}
-      <Box args={[0.55, 0.15, 0.55]} position={[0, 1.8, 0]} castShadow>
-         <meshStandardMaterial color="#212529" /> {/* Tóc đen */}
-      </Box>
+      {/* Cột sáng Hologram mờ */}
+      {isWorking && (
+        <mesh position={[0, 0.8, 0]}>
+          <cylinderGeometry args={[0.4, 0.5, 1.5, 32]} />
+          <meshBasicMaterial color={color} transparent opacity={0.15} />
+        </mesh>
+      )}
 
-      {/* Áo Sơ mi trong (Shirt) */}
-      <Box args={[0.4, 0.8, 0.25]} position={[0, 0.95, 0]} castShadow>
-         <meshStandardMaterial color={shirtColor} />
-      </Box>
-
-      {/* Áo Vest ngoài */}
-      {/* Vạt vest trái */}
-      <Box args={[0.15, 0.8, 0.28]} position={[-0.15, 0.95, 0]} castShadow>
-         <meshStandardMaterial color={suitColor} roughness={0.8} />
-      </Box>
-      {/* Vạt vest phải */}
-      <Box args={[0.15, 0.8, 0.28]} position={[0.15, 0.95, 0]} castShadow>
-         <meshStandardMaterial color={suitColor} roughness={0.8} />
-      </Box>
-      {/* Lưng vest */}
-      <Box args={[0.45, 0.8, 0.1]} position={[0, 0.95, -0.1]} castShadow>
-         <meshStandardMaterial color={suitColor} roughness={0.8} />
-      </Box>
-      {/* Cà vạt */}
-      <Box args={[0.06, 0.4, 0.05]} position={[0, 1.1, 0.13]} castShadow>
-         <meshStandardMaterial color={tieColor} />
-      </Box>
-
-      {/* Quần ống suông (Pants/Skirt) */}
-      <Box args={[0.45, 0.55, 0.28]} position={[0, 0.25, 0]} castShadow>
-         <meshStandardMaterial color={suitColor} roughness={0.8} />
-      </Box>
-
-      {/* Hai cánh tay (Arms) */}
-      <Box ref={leftArmRef} args={[0.12, 0.7, 0.12]} position={[-0.3, 0.95, 0]} castShadow>
-         <meshStandardMaterial color={suitColor} roughness={0.8} />
-      </Box>
-      <Box ref={rightArmRef} args={[0.12, 0.7, 0.12]} position={[0.3, 0.95, 0]} castShadow>
-         <meshStandardMaterial color={suitColor} roughness={0.8} />
-      </Box>
-      
-      {/* Bảng tên (Label) */}
-      <Html position={[0, 2.2, 0]} center zIndexRange={[100, 0]}>
-        <div className="bg-black/80 text-white px-3 py-1 rounded-md text-[11px] font-bold border border-white/30 whitespace-nowrap shadow-lg">
-          {name}
-          <div className="text-gray-300 text-[9px] uppercase mt-0.5">{role}</div>
+      {/* Giao diện UI Thẻ nhân viên (Luôn xoay theo camera) */}
+      <Html position={[0, 1.5, 0]} center zIndexRange={[100, 0]}>
+        <div className={`flex flex-col items-center transition-all duration-300 ${isWorking ? 'animate-bounce' : ''}`}>
+           {/* Ảnh đại diện người thật */}
+           <div className={`relative rounded-full p-0.5 ${isWorking ? 'bg-green-400 shadow-[0_0_15px_rgba(74,222,128,0.6)]' : 'bg-gray-300'} transition-all duration-300`}>
+             <img src={avatar} className="w-10 h-10 rounded-full border-2 border-white object-cover" alt={name} />
+             {isWorking && (
+               <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+             )}
+           </div>
+           
+           {/* Thẻ tên siêu gọn lấp ló */}
+           <div className="mt-1.5 bg-white/95 backdrop-blur shadow text-gray-800 px-2.5 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap border border-gray-100 flex flex-col items-center">
+             <span>{name}</span>
+             <span className="text-[8px] text-blue-600 font-extrabold uppercase tracking-tighter mt-0.5">{role}</span>
+           </div>
         </div>
       </Html>
     </group>
@@ -175,22 +141,22 @@ export default function Office3D({ activeAgent }: Office3DProps) {
         <meshStandardMaterial color="#475569" transparent opacity={0.6} />
       </Box>
       <Desk position={[0, 0, -9]} />
-      <AgentCharacter position={[0, 0, -9.8]} color="#3b82f6" name="Đại Hoàng" role="CEO" isWorking={activeAgent === "1"} />
+      <AgentCharacter position={[0, 0, -9.8]} color="#3b82f6" name="Đại Hoàng" role="CEO" isWorking={activeAgent === "1"} avatar="/max.png" />
       <Tree position={[-5, 0, -10]} />
       <Tree position={[5, 0, -10]} />
 
       {/* --- PHÒNG KẾ TOÁN (Bên trái) --- */}
       <RoomLabel name="Phòng Tài Chính" position={[-10, 5, 0]} />
       <Desk position={[-10, 0, 0]} rotation={Math.PI / 2} />
-      <AgentCharacter position={[-10.8, 0, 0]} color="#ec4899" name="Anna / Sophia" role="Kế toán & Thư ký" isWorking={activeAgent === "4"} />
+      <AgentCharacter position={[-10.8, 0, 0]} color="#ec4899" name="Anna / Sophia" role="Kế toán & Thư ký" isWorking={activeAgent === "4"} avatar="/anna.png" />
       <Tree position={[-11, 0, 4]} />
 
       {/* --- TRUNG TÂM CÔNG NGHỆ (Bên phải) --- */}
       <RoomLabel name="Trung tâm R&D Công nghệ" position={[8, 5, 0]} />
       <Desk position={[6, 0, 0]} />
       <Desk position={[10, 0, 0]} />
-      <AgentCharacter position={[6, 0, 0.8]} color="#10b981" name="Dev_Agent" role="Lập trình viên" isWorking={activeAgent === "2"} />
-      <AgentCharacter position={[10, 0, 0.8]} color="#f59e0b" name="QA_Agent" role="Kiểm định viên" isWorking={activeAgent === "3"} />
+      <AgentCharacter position={[6, 0, 0.8]} color="#10b981" name="Dev_Agent" role="Lập trình viên" isWorking={activeAgent === "2"} avatar="/sophia.png" />
+      <AgentCharacter position={[10, 0, 0.8]} color="#f59e0b" name="QA_Agent" role="Kiểm định viên" isWorking={activeAgent === "3"} avatar="/max.png" />
       <Tree position={[12, 0, -2]} />
       <Tree position={[4, 0, -2]} />
 
