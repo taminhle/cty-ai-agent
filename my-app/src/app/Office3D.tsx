@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Html, Box, Plane, Environment, ContactShadows, useGLTF, useAnimations, Clone } from "@react-three/drei";
 import * as THREE from "three";
@@ -195,9 +195,9 @@ export default function Office3D({ activeAgent }: Office3DProps) {
   return (
     <Canvas shadows camera={{ position: [0, 10, 18], fov: 45 }}>
       <color attach="background" args={["#f1f5f9"]} /> 
-      
-      {/* Ánh sáng và môi trường */}
-      <Environment preset="apartment" />
+      <Suspense fallback={<Html center><div className="px-4 py-2 bg-white rounded-lg shadow font-bold text-blue-600">Loading 3D Models...</div></Html>}>
+        {/* Ánh sáng và môi trường */}
+        <Environment preset="apartment" />
       <ambientLight intensity={0.5} />
       <directionalLight 
         position={[10, 15, -10]} 
@@ -250,7 +250,7 @@ export default function Office3D({ activeAgent }: Office3DProps) {
         color="#f59e0b" 
         agentProps={{ color: "#f59e0b", name: "QA Agent", role: "Kiểm tra chất lượng", isWorking: activeAgent === "3", avatar: "/max.png" }}
       />
-
+      </Suspense>
     </Canvas>
   );
 }
