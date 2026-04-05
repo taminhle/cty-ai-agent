@@ -181,8 +181,8 @@ function PrivateOfficeRoom({ position, roomName, color, deskRotation = 0, agentP
       <ModernDesk position={[0, 0, -1]} rotation={deskRotation} partitionColor={color} />
       <OfficeChair position={[0, 0, 0]} rotation={deskRotation} />
 
-      {/* Nhân sự sử dụng mô hình Robot 3D! */}
-      <AgentCharacterGLTF position={[0, 0, 0]} {...agentProps} />
+      {/* Nhân sự nằm chính xác trên ghế */}
+      <AgentCharacter position={[0, 0, 0]} {...agentProps} />
     </group>
   );
 }
